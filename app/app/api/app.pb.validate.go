@@ -926,6 +926,10 @@ func (m *UserInfoReply) validate(all bool) error {
 
 	// no validation rules for FybRate
 
+	// no validation rules for AreaAmount
+
+	// no validation rules for RecommendAreaTotal
+
 	if len(errors) > 0 {
 		return UserInfoReplyMultiError(errors)
 	}

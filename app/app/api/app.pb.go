@@ -329,40 +329,42 @@ type UserInfoReply struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Address           string                `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	Level             int64                 `protobuf:"varint,2,opt,name=level,proto3" json:"level,omitempty"`
-	Status            string                `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
-	Amount            string                `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
-	BalanceUsdt       string                `protobuf:"bytes,5,opt,name=balanceUsdt,proto3" json:"balanceUsdt,omitempty"`
-	BalanceDhb        string                `protobuf:"bytes,6,opt,name=balanceDhb,proto3" json:"balanceDhb,omitempty"`
-	InviteUrl         string                `protobuf:"bytes,7,opt,name=inviteUrl,proto3" json:"inviteUrl,omitempty"`
-	InviteUserAddress string                `protobuf:"bytes,8,opt,name=inviteUserAddress,proto3" json:"inviteUserAddress,omitempty"`
-	RecommendNum      int64                 `protobuf:"varint,9,opt,name=recommendNum,proto3" json:"recommendNum,omitempty"`
-	RecommendTeamNum  int64                 `protobuf:"varint,10,opt,name=recommendTeamNum,proto3" json:"recommendTeamNum,omitempty"`
-	Total             string                `protobuf:"bytes,11,opt,name=total,proto3" json:"total,omitempty"`
-	Row               int64                 `protobuf:"varint,12,opt,name=row,proto3" json:"row,omitempty"`
-	Col               int64                 `protobuf:"varint,13,opt,name=col,proto3" json:"col,omitempty"`
-	RecommendTotal    string                `protobuf:"bytes,15,opt,name=recommendTotal,proto3" json:"recommendTotal,omitempty"`
-	LocationTotal     string                `protobuf:"bytes,16,opt,name=locationTotal,proto3" json:"locationTotal,omitempty"`
-	Usdt              string                `protobuf:"bytes,20,opt,name=usdt,proto3" json:"usdt,omitempty"`
-	Account           string                `protobuf:"bytes,22,opt,name=account,proto3" json:"account,omitempty"`
-	RecommendNumAll   int64                 `protobuf:"varint,24,opt,name=recommendNumAll,proto3" json:"recommendNumAll,omitempty"`
-	RecommendTeamAll  int64                 `protobuf:"varint,25,opt,name=recommendTeamAll,proto3" json:"recommendTeamAll,omitempty"`
-	AmountB           string                `protobuf:"bytes,27,opt,name=amountB,proto3" json:"amountB,omitempty"`
-	RecommendVipTotal string                `protobuf:"bytes,28,opt,name=recommendVipTotal,proto3" json:"recommendVipTotal,omitempty"`
-	FeeDaily          string                `protobuf:"bytes,29,opt,name=feeDaily,proto3" json:"feeDaily,omitempty"`
-	WithdrawAmount    string                `protobuf:"bytes,30,opt,name=withdrawAmount,proto3" json:"withdrawAmount,omitempty"`
-	UserCount         string                `protobuf:"bytes,31,opt,name=userCount,proto3" json:"userCount,omitempty"`
-	TotalDeposit      string                `protobuf:"bytes,32,opt,name=totalDeposit,proto3" json:"totalDeposit,omitempty"`
-	PoolAmount        string                `protobuf:"bytes,34,opt,name=poolAmount,proto3" json:"poolAmount,omitempty"`
-	TopUser           []*UserInfoReply_List `protobuf:"bytes,33,rep,name=topUser,proto3" json:"topUser,omitempty"`
-	LocationCount     int64                 `protobuf:"varint,35,opt,name=locationCount,proto3" json:"locationCount,omitempty"`
-	TodayReward       string                `protobuf:"bytes,36,opt,name=todayReward,proto3" json:"todayReward,omitempty"`
-	RecommendTop      string                `protobuf:"bytes,37,opt,name=recommendTop,proto3" json:"recommendTop,omitempty"`
-	LocationTotalCol  string                `protobuf:"bytes,38,opt,name=locationTotalCol,proto3" json:"locationTotalCol,omitempty"`
-	LocationTotalRow  string                `protobuf:"bytes,39,opt,name=locationTotalRow,proto3" json:"locationTotalRow,omitempty"`
-	FybPrice          string                `protobuf:"bytes,40,opt,name=fybPrice,proto3" json:"fybPrice,omitempty"`
-	FybRate           string                `protobuf:"bytes,41,opt,name=fybRate,proto3" json:"fybRate,omitempty"`
+	Address            string                `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Level              int64                 `protobuf:"varint,2,opt,name=level,proto3" json:"level,omitempty"`
+	Status             string                `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	Amount             string                `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	BalanceUsdt        string                `protobuf:"bytes,5,opt,name=balanceUsdt,proto3" json:"balanceUsdt,omitempty"`
+	BalanceDhb         string                `protobuf:"bytes,6,opt,name=balanceDhb,proto3" json:"balanceDhb,omitempty"`
+	InviteUrl          string                `protobuf:"bytes,7,opt,name=inviteUrl,proto3" json:"inviteUrl,omitempty"`
+	InviteUserAddress  string                `protobuf:"bytes,8,opt,name=inviteUserAddress,proto3" json:"inviteUserAddress,omitempty"`
+	RecommendNum       int64                 `protobuf:"varint,9,opt,name=recommendNum,proto3" json:"recommendNum,omitempty"`
+	RecommendTeamNum   int64                 `protobuf:"varint,10,opt,name=recommendTeamNum,proto3" json:"recommendTeamNum,omitempty"`
+	Total              string                `protobuf:"bytes,11,opt,name=total,proto3" json:"total,omitempty"`
+	Row                int64                 `protobuf:"varint,12,opt,name=row,proto3" json:"row,omitempty"`
+	Col                int64                 `protobuf:"varint,13,opt,name=col,proto3" json:"col,omitempty"`
+	RecommendTotal     string                `protobuf:"bytes,15,opt,name=recommendTotal,proto3" json:"recommendTotal,omitempty"`
+	LocationTotal      string                `protobuf:"bytes,16,opt,name=locationTotal,proto3" json:"locationTotal,omitempty"`
+	Usdt               string                `protobuf:"bytes,20,opt,name=usdt,proto3" json:"usdt,omitempty"`
+	Account            string                `protobuf:"bytes,22,opt,name=account,proto3" json:"account,omitempty"`
+	RecommendNumAll    int64                 `protobuf:"varint,24,opt,name=recommendNumAll,proto3" json:"recommendNumAll,omitempty"`
+	RecommendTeamAll   int64                 `protobuf:"varint,25,opt,name=recommendTeamAll,proto3" json:"recommendTeamAll,omitempty"`
+	AmountB            string                `protobuf:"bytes,27,opt,name=amountB,proto3" json:"amountB,omitempty"`
+	RecommendVipTotal  string                `protobuf:"bytes,28,opt,name=recommendVipTotal,proto3" json:"recommendVipTotal,omitempty"`
+	FeeDaily           string                `protobuf:"bytes,29,opt,name=feeDaily,proto3" json:"feeDaily,omitempty"`
+	WithdrawAmount     string                `protobuf:"bytes,30,opt,name=withdrawAmount,proto3" json:"withdrawAmount,omitempty"`
+	UserCount          string                `protobuf:"bytes,31,opt,name=userCount,proto3" json:"userCount,omitempty"`
+	TotalDeposit       string                `protobuf:"bytes,32,opt,name=totalDeposit,proto3" json:"totalDeposit,omitempty"`
+	PoolAmount         string                `protobuf:"bytes,34,opt,name=poolAmount,proto3" json:"poolAmount,omitempty"`
+	TopUser            []*UserInfoReply_List `protobuf:"bytes,33,rep,name=topUser,proto3" json:"topUser,omitempty"`
+	LocationCount      int64                 `protobuf:"varint,35,opt,name=locationCount,proto3" json:"locationCount,omitempty"`
+	TodayReward        string                `protobuf:"bytes,36,opt,name=todayReward,proto3" json:"todayReward,omitempty"`
+	RecommendTop       string                `protobuf:"bytes,37,opt,name=recommendTop,proto3" json:"recommendTop,omitempty"`
+	LocationTotalCol   string                `protobuf:"bytes,38,opt,name=locationTotalCol,proto3" json:"locationTotalCol,omitempty"`
+	LocationTotalRow   string                `protobuf:"bytes,39,opt,name=locationTotalRow,proto3" json:"locationTotalRow,omitempty"`
+	FybPrice           string                `protobuf:"bytes,40,opt,name=fybPrice,proto3" json:"fybPrice,omitempty"`
+	FybRate            string                `protobuf:"bytes,41,opt,name=fybRate,proto3" json:"fybRate,omitempty"`
+	AreaAmount         string                `protobuf:"bytes,42,opt,name=areaAmount,proto3" json:"areaAmount,omitempty"`
+	RecommendAreaTotal string                `protobuf:"bytes,43,opt,name=recommendAreaTotal,proto3" json:"recommendAreaTotal,omitempty"`
 }
 
 func (x *UserInfoReply) Reset() {
@@ -631,6 +633,20 @@ func (x *UserInfoReply) GetFybPrice() string {
 func (x *UserInfoReply) GetFybRate() string {
 	if x != nil {
 		return x.FybRate
+	}
+	return ""
+}
+
+func (x *UserInfoReply) GetAreaAmount() string {
+	if x != nil {
+		return x.AreaAmount
+	}
+	return ""
+}
+
+func (x *UserInfoReply) GetRecommendAreaTotal() string {
+	if x != nil {
+		return x.RecommendAreaTotal
 	}
 	return ""
 }
@@ -3615,7 +3631,7 @@ var file_api_app_proto_rawDesc = []byte{
 	0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x0e, 0x0a,
 	0x0c, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x11, 0x0a,
 	0x0f, 0x55, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x22, 0xd8, 0x09, 0x0a, 0x0d, 0x55, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x70,
+	0x22, 0xa8, 0x0a, 0x0a, 0x0d, 0x55, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x70,
 	0x6c, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05,
 	0x6c, 0x65, 0x76, 0x65, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x6c, 0x65, 0x76,
@@ -3686,7 +3702,12 @@ var file_api_app_proto_rawDesc = []byte{
 	0x77, 0x12, 0x1a, 0x0a, 0x08, 0x66, 0x79, 0x62, 0x50, 0x72, 0x69, 0x63, 0x65, 0x18, 0x28, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x08, 0x66, 0x79, 0x62, 0x50, 0x72, 0x69, 0x63, 0x65, 0x12, 0x18, 0x0a,
 	0x07, 0x66, 0x79, 0x62, 0x52, 0x61, 0x74, 0x65, 0x18, 0x29, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x66, 0x79, 0x62, 0x52, 0x61, 0x74, 0x65, 0x1a, 0x62, 0x0a, 0x04, 0x4c, 0x69, 0x73, 0x74, 0x12,
+	0x66, 0x79, 0x62, 0x52, 0x61, 0x74, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x61, 0x72, 0x65, 0x61, 0x41,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x2a, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x61, 0x72, 0x65,
+	0x61, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x2e, 0x0a, 0x12, 0x72, 0x65, 0x63, 0x6f, 0x6d,
+	0x6d, 0x65, 0x6e, 0x64, 0x41, 0x72, 0x65, 0x61, 0x54, 0x6f, 0x74, 0x61, 0x6c, 0x18, 0x2b, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x12, 0x72, 0x65, 0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x64, 0x41, 0x72,
+	0x65, 0x61, 0x54, 0x6f, 0x74, 0x61, 0x6c, 0x1a, 0x62, 0x0a, 0x04, 0x4c, 0x69, 0x73, 0x74, 0x12,
 	0x18, 0x0a, 0x07, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x07, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x28, 0x0a, 0x0f, 0x72, 0x65, 0x63,
 	0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x64, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01,

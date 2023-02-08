@@ -7,6 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -30,6 +31,15 @@ type UserRecommend struct {
 	ID            int64     `gorm:"primarykey;type:int"`
 	UserId        int64     `gorm:"type:int;not null"`
 	RecommendCode string    `gorm:"type:varchar(10000);not null"`
+	CreatedAt     time.Time `gorm:"type:datetime;not null"`
+	UpdatedAt     time.Time `gorm:"type:datetime;not null"`
+}
+
+type UserRecommendArea struct {
+	ID            int64     `gorm:"primarykey;type:int"`
+	RecommendCode string    `gorm:"type:varchar(10000);not null"`
+	Version       int64     `gorm:"type:int;not null"`
+	Num           int64     `gorm:"type:int;not null"`
 	CreatedAt     time.Time `gorm:"type:datetime;not null"`
 	UpdatedAt     time.Time `gorm:"type:datetime;not null"`
 }
@@ -543,6 +553,116 @@ func (ur *UserRecommendRepo) CreateUserRecommend(ctx context.Context, u *biz.Use
 		UserId:        userRecommend.UserId,
 		RecommendCode: userRecommend.RecommendCode,
 	}, nil
+}
+
+// CreateUserRecommendArea .
+func (ur *UserRecommendRepo) CreateUserRecommendArea(ctx context.Context, u *biz.User, recommendUser *biz.UserRecommend) (bool, error) {
+	var tmpRecommendCode string
+	if nil != recommendUser && 0 < recommendUser.UserId {
+		tmpRecommendCode = "D" + strconv.FormatInt(recommendUser.UserId, 10)
+		if "" != recommendUser.RecommendCode {
+			tmpRecommendCode = recommendUser.RecommendCode + tmpRecommendCode
+		}
+	}
+
+	var myUserRecommendArea UserRecommendArea
+	if err := ur.data.db.Where("recommend_code=?", tmpRecommendCode).Table("user_recommend_area").First(&myUserRecommendArea).Error; err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New(500, "USER RECOMMEND ERROR", err.Error())
+		}
+
+		// 业务上限制了错误的上一级未insert下一级优先insert的情况
+		var userRecommendArea UserRecommendArea
+		userRecommendArea.RecommendCode = tmpRecommendCode + "D" + strconv.FormatInt(u.ID, 10)
+		userRecommendArea.Num = myUserRecommendArea.Num + int64(len(strings.Split(userRecommendArea.RecommendCode, "D"))-1)
+		res := ur.data.DB(ctx).Table("user_recommend_area").Create(&userRecommendArea)
+		if res.Error != nil {
+			return false, errors.New(500, "CREATE_USER_RECOMMEND_AREA_ERROR", "用户推荐关系链路创建失败")
+		}
+
+	} else {
+		res := ur.data.DB(ctx).Table("user_recommend_area").
+			Where("id=? and version=?", myUserRecommendArea.ID, myUserRecommendArea.Version).
+			Updates(map[string]interface{}{"version": gorm.Expr("version + ?", 1), "num": gorm.Expr("num + ?", 1), "recommend_code": tmpRecommendCode + "D" + strconv.FormatInt(u.ID, 10)})
+		if 0 == res.RowsAffected || nil != res.Error {
+			return false, errors.New(500, "CREATE_USER_RECOMMEND_AREA_ERROR", "用户推荐关系链路修改失败")
+		}
+	}
+
+	return true, nil
+}
+
+// DeleteOrOriginUserRecommendArea .
+func (ur *UserRecommendRepo) DeleteOrOriginUserRecommendArea(ctx context.Context, code string, originCode string) (bool, error) {
+	//var myUserRecommendArea []*UserRecommendArea
+	//if err := ur.data.db.Where("recommend_code like ? and status=?", originCode+"%", 0).Table("user_recommend_area").Find(&myUserRecommendArea).Error; err != nil {
+	//	if !errors.Is(err, gorm.ErrRecordNotFound) {
+	//		return false, errors.New(500, "USER RECOMMEND ERROR", err.Error())
+	//	}
+	//
+	//	res := ur.data.DB(ctx).Table("user_recommend_area").
+	//		Where("recommend_code=? and status=?", code, 0).
+	//		Updates(map[string]interface{}{"recommend_code": originCode})
+	//	if 0 == res.RowsAffected || nil != res.Error {
+	//		return false, errors.New(500, "UPDATE_USER_RECOMMEND_AREA_ERROR", "用户推荐关系链路修改失败")
+	//	}
+	//	return true, nil
+	//}
+	//
+	//if 2 > len(myUserRecommendArea) {
+	res := ur.data.DB(ctx).Table("user_recommend_area").
+		Where("recommend_code=?", code).
+		Updates(map[string]interface{}{"recommend_code": originCode, "num": gorm.Expr("num - ?", 1)})
+	if 0 == res.RowsAffected || nil != res.Error {
+		return false, errors.New(500, "UPDATE_USER_RECOMMEND_AREA_ERROR", "用户推荐关系链路修改失败")
+	}
+	//} else {
+	//	res := ur.data.DB(ctx).Table("user_recommend_area").
+	//		Where("recommend_code=? and status=?", code, 0).
+	//		Updates(map[string]interface{}{"status": 1})
+	//	if 0 == res.RowsAffected || nil != res.Error {
+	//		return false, errors.New(500, "UPDATE_USER_RECOMMEND_AREA_ERROR", "用户推荐关系链路修改失败")
+	//	}
+	//}
+
+	return true, nil
+}
+
+// GetUserRecommendLowArea .
+func (ur *UserRecommendRepo) GetUserRecommendLowArea(ctx context.Context, code string) ([]*biz.UserRecommendArea, error) {
+
+	var firstRecommendArea *UserRecommendArea
+	if err := ur.data.db.Order("num desc").Table("user_recommend_area").First(&firstRecommendArea).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New(500, "USER RECOMMEND NOT FOUND", err.Error())
+		}
+
+		return nil, errors.New(500, "USER RECOMMEND ERROR", err.Error())
+	}
+
+	var myUserRecommendAreas []*UserRecommendArea
+	if err := ur.data.db.Where("recommend_code like ?", code+"%").Table("user_recommend_area").Find(&myUserRecommendAreas).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New(500, "USER RECOMMEND NOT FOUND", err.Error())
+		}
+
+		return nil, errors.New(500, "USER RECOMMEND ERROR", err.Error())
+	}
+
+	res := make([]*biz.UserRecommendArea, 0)
+	for _, v := range myUserRecommendAreas {
+		if firstRecommendArea.ID == v.ID {
+			continue
+		}
+
+		res = append(res, &biz.UserRecommendArea{
+			ID:            v.ID,
+			RecommendCode: v.RecommendCode,
+			Num:           v.Num,
+		})
+	}
+
+	return res, nil
 }
 
 // UpdateUserRecommend .

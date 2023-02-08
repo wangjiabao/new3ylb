@@ -224,6 +224,8 @@ message UserInfoReply {
 	string locationTotalRow = 39;
 	string fybPrice = 40;
 	string fybRate = 41;
+	string areaAmount = 42;
+	string recommendAreaTotal = 43;
 }
 
 message RewardListRequest {

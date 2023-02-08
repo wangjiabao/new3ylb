@@ -502,6 +502,10 @@ components:
                     type: string
                 fybRate:
                     type: string
+                areaAmount:
+                    type: string
+                recommendAreaTotal:
+                    type: string
         UserInfoReply_List:
             type: object
             properties:
