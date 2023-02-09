@@ -44,6 +44,16 @@ type UserRecommendArea struct {
 	UpdatedAt     time.Time `gorm:"type:datetime;not null"`
 }
 
+type UserArea struct {
+	ID         int64     `gorm:"primarykey;type:int"`
+	UserId     int64     `gorm:"type:int;not null"`
+	Level      int64     `gorm:"type:int;not null"`
+	Amount     int64     `gorm:"type:bigint;not null"`
+	SelfAmount int64     `gorm:"type:bigint;not null"`
+	CreatedAt  time.Time `gorm:"type:datetime;not null"`
+	UpdatedAt  time.Time `gorm:"type:datetime;not null"`
+}
+
 type UserCurrentMonthRecommend struct {
 	ID              int64     `gorm:"primarykey;type:int"`
 	UserId          int64     `gorm:"type:int;not null"`
@@ -592,6 +602,19 @@ func (ur *UserRecommendRepo) CreateUserRecommendArea(ctx context.Context, u *biz
 	return true, nil
 }
 
+// CreateUserArea .
+func (ur *UserRecommendRepo) CreateUserArea(ctx context.Context, u *biz.User) (bool, error) {
+	// 业务上限制了错误的上一级未insert下一级优先insert的情况
+	var userArea UserArea
+	userArea.UserId = u.ID
+	res := ur.data.DB(ctx).Table("user_area").Create(&userArea)
+	if res.Error != nil {
+		return false, errors.New(500, "CREATE_USER_AREA_ERROR", "用户区信息创建失败")
+	}
+
+	return true, nil
+}
+
 // DeleteOrOriginUserRecommendArea .
 func (ur *UserRecommendRepo) DeleteOrOriginUserRecommendArea(ctx context.Context, code string, originCode string) (bool, error) {
 	//var myUserRecommendArea []*UserRecommendArea
@@ -659,6 +682,32 @@ func (ur *UserRecommendRepo) GetUserRecommendLowArea(ctx context.Context, code s
 			ID:            v.ID,
 			RecommendCode: v.RecommendCode,
 			Num:           v.Num,
+		})
+	}
+
+	return res, nil
+}
+
+// GetUserAreas .
+func (ur *UserRecommendRepo) GetUserAreas(ctx context.Context, userIds []int64) ([]*biz.UserArea, error) {
+
+	var userAreas []*UserArea
+	if err := ur.data.db.Where("user_id in (?)", userIds).Table("user_area").Find(&userAreas).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New(500, "USER AREA NOT FOUND", err.Error())
+		}
+
+		return nil, errors.New(500, "USER AREA ERROR", err.Error())
+	}
+
+	res := make([]*biz.UserArea, 0)
+	for _, v := range userAreas {
+		res = append(res, &biz.UserArea{
+			ID:         v.ID,
+			UserId:     v.UserId,
+			Amount:     v.Amount,
+			SelfAmount: v.SelfAmount,
+			Level:      v.Level,
 		})
 	}
 

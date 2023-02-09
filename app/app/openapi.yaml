@@ -506,6 +506,8 @@ components:
                     type: string
                 recommendAreaTotal:
                     type: string
+                areaMaxAmount:
+                    type: string
         UserInfoReply_List:
             type: object
             properties:

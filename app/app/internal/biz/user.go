@@ -39,6 +39,14 @@ type UserRecommendArea struct {
 	CreatedAt     time.Time
 }
 
+type UserArea struct {
+	ID         int64
+	UserId     int64
+	Amount     int64
+	SelfAmount int64
+	Level      int64
+}
+
 type UserCurrentMonthRecommend struct {
 	ID              int64
 	UserId          int64
@@ -165,6 +173,8 @@ type UserRecommendRepo interface {
 	CreateUserRecommendArea(ctx context.Context, u *User, recommendUser *UserRecommend) (bool, error)
 	DeleteOrOriginUserRecommendArea(ctx context.Context, code string, originCode string) (bool, error)
 	GetUserRecommendLowArea(ctx context.Context, code string) ([]*UserRecommendArea, error)
+	GetUserAreas(ctx context.Context, userIds []int64) ([]*UserArea, error)
+	CreateUserArea(ctx context.Context, u *User) (bool, error)
 }
 
 type UserCurrentMonthRecommendRepo interface {
@@ -263,7 +273,7 @@ func (uuc *UserUseCase) GetExistUserByAddressOrCreate(ctx context.Context, u *Us
 				return err
 			}
 
-			_, err = uuc.urRepo.CreateUserRecommendArea(ctx, user, recommendUser) // 创建用户推荐链路信息
+			_, err = uuc.urRepo.CreateUserArea(ctx, user)
 			if err != nil {
 				return err
 			}
@@ -343,28 +353,10 @@ func (uuc *UserUseCase) UpdateUserRecommend(ctx context.Context, u *User, req *v
 		}
 
 		// 更新
-		if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-			_, err = uuc.urRepo.UpdateUserRecommend(ctx, u, recommendUser)
-			if err != nil {
-				return err
-			}
-
-			// 接口只有未入单时可以调用，也未有后续的推荐人，只删除自己的链路记录即可
-			_, err = uuc.urRepo.DeleteOrOriginUserRecommendArea(ctx, userRecommend.RecommendCode+"D"+strconv.FormatInt(u.ID, 10), userRecommend.RecommendCode) // 删除老信息
-			if err != nil {
-				return err
-			}
-
-			_, err = uuc.urRepo.CreateUserRecommendArea(ctx, u, recommendUser) // 创建用户推荐链路信息
-			if err != nil {
-				return err
-			}
-
-			return nil
-		}); err != nil {
+		_, err = uuc.urRepo.UpdateUserRecommend(ctx, u, recommendUser)
+		if err != nil {
 			return nil, err
 		}
-
 	}
 
 	return &v1.RecommendUpdateReply{InviteUserAddress: myRecommendUser.Address}, err
@@ -423,9 +415,8 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		fybPrice                 string
 		fybRate                  string
 		locationRowConfig        = int64(20)
-		userRecommendArea        []*UserRecommendArea
-		userAreas                map[int64]int64
 		areaAmount               int64
+		maxAreaAmount            int64
 		err                      error
 	)
 
@@ -639,29 +630,35 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 	}
 
 	// 小区信息
-	userAreas = make(map[int64]int64, 0)
-	userRecommendArea, err = uuc.urRepo.GetUserRecommendLowArea(ctx, myCode)
-	if nil != userRecommendArea {
-		for _, vUserRecommendArea := range userRecommendArea {
-			tmpCodes := strings.Split(vUserRecommendArea.RecommendCode, "D")
-			for _, vTmpCode := range tmpCodes {
-				tmpUserId, _ := strconv.ParseInt(vTmpCode, 10, 64)
-				if tmpUserId > 0 {
-					userAreas[tmpUserId] = tmpUserId
-				}
+	if "" != myCode {
+		var (
+			myRecommendUsers   []*UserRecommend
+			userAreas          []*UserArea
+			myRecommendUserIds []int64
+		)
+		myRecommendUsers, err = uuc.urRepo.GetUserRecommendByCode(ctx, myCode)
+		if nil == err {
+			// 找直推
+			for _, vMyRecommendUsers := range myRecommendUsers {
+				myRecommendUserIds = append(myRecommendUserIds, vMyRecommendUsers.UserId)
 			}
 		}
-	}
-	// 获取小区内入单信息
-	if 0 < len(userAreas) {
-		tmpUserAreasSlice := make([]int64, 0)
-		for _, vUserAreas := range userAreas {
-			tmpUserAreasSlice = append(tmpUserAreasSlice, vUserAreas)
-		}
-		var tmpAreaLocations []*Location
-		tmpAreaLocations, err = uuc.locationRepo.GetLocationByIds(ctx, tmpUserAreasSlice...)
-		for _, vTmpAreaLocations := range tmpAreaLocations {
-			areaAmount += vTmpAreaLocations.CurrentMax / 5
+		if 0 < len(myRecommendUserIds) {
+			userAreas, err = uuc.urRepo.GetUserAreas(ctx, myRecommendUserIds)
+			if nil == err {
+				var (
+					tmpTotalAreaAmount int64
+				)
+				for _, vUserAreas := range userAreas {
+					tmpAreaAmount := vUserAreas.Amount + vUserAreas.SelfAmount
+					tmpTotalAreaAmount += tmpAreaAmount
+					if tmpAreaAmount > maxAreaAmount {
+						maxAreaAmount = tmpAreaAmount
+					}
+				}
+
+				areaAmount = tmpTotalAreaAmount - maxAreaAmount
+			}
 		}
 	}
 
@@ -698,7 +695,8 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		LocationTotalRow:   fmt.Sprintf("%.2f", float64(locationTotalRow)/float64(10000000000)),
 		FybPrice:           fybPrice,
 		FybRate:            fybRate,
-		AreaAmount:         fmt.Sprintf("%.2f", float64(areaAmount)/float64(10000000000)),
+		AreaAmount:         strconv.FormatInt(areaAmount, 10),
+		AreaMaxAmount:      strconv.FormatInt(maxAreaAmount, 10),
 		RecommendAreaTotal: fmt.Sprintf("%.2f", float64(recommendAreaTotal)/float64(10000000000)),
 	}, nil
 }

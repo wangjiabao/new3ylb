@@ -226,6 +226,7 @@ message UserInfoReply {
 	string fybRate = 41;
 	string areaAmount = 42;
 	string recommendAreaTotal = 43;
+	string areaMaxAmount = 44;
 }
 
 message RewardListRequest {
