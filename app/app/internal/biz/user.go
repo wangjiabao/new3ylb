@@ -15,6 +15,7 @@ import (
 type User struct {
 	ID        int64
 	Address   string
+	Undo      int64
 	CreatedAt time.Time
 }
 
@@ -695,6 +696,7 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		LocationTotalRow:   fmt.Sprintf("%.2f", float64(locationTotalRow)/float64(10000000000)),
 		FybPrice:           fybPrice,
 		FybRate:            fybRate,
+		Undo:               myUser.Undo,
 		AreaAmount:         strconv.FormatInt(areaAmount, 10),
 		AreaMaxAmount:      strconv.FormatInt(maxAreaAmount, 10),
 		RecommendAreaTotal: fmt.Sprintf("%.2f", float64(recommendAreaTotal)/float64(10000000000)),
