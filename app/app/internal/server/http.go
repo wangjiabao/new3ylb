@@ -22,7 +22,7 @@ func NewHTTPServer(c *conf.Server, app *service.AppService, logger log.Logger) *
 			recovery.Recovery(),
 			selector.Server( // jwt 验证
 				jwt.Server(func(token *jwt2.Token) (interface{}, error) {
-					return []byte("7d25c9b8d23acb6bc6565270495ed7a0"), nil
+					return []byte("5485c6f09a1a9bf5edeb841d85e09250"), nil
 				}, jwt.WithSigningMethod(jwt2.SigningMethodHS256)),
 			).Match(NewWhiteListMatcher()).Build(),
 		),
