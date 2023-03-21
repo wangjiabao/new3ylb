@@ -317,6 +317,82 @@ func (lr *LocationRepo) UpdateLocation(ctx context.Context, id int64, status str
 	return nil
 }
 
+// GetLocationsByUserIdsGroupByUserId .
+func (lr *LocationRepo) GetLocationsByUserIdsGroupByUserId(ctx context.Context, userIds []int64) ([]*biz.Location, error) {
+	var locations []*Location
+	res := make([]*biz.Location, 0)
+	if err := lr.data.db.Table("location").
+		Where("user_id IN(?)", userIds).
+		Group("user_id").
+		Order("id desc").Find(&locations).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return res, nil
+		}
+
+		return nil, errors.New(500, "LOCATION ERROR", err.Error())
+	}
+
+	for _, location := range locations {
+		res = append(res, &biz.Location{
+			ID:           location.ID,
+			UserId:       location.UserId,
+			Status:       location.Status,
+			CurrentLevel: location.CurrentLevel,
+			Current:      location.Current,
+			CurrentMax:   location.CurrentMax,
+			Row:          location.Row,
+			Col:          location.Col,
+		})
+	}
+
+	return res, nil
+}
+
+// GetLocationsByUserIdsAt .
+func (lr *LocationRepo) GetLocationsByUserIdsAt(ctx context.Context, userIds []int64) ([]*biz.Location, error) {
+	var locations []*Location
+	now := time.Now().UTC()
+	var startDate time.Time
+	var endDate time.Time
+	if 14 <= now.Hour() {
+		startDate = now
+		endDate = now.AddDate(0, 0, 1)
+	} else {
+		startDate = now.AddDate(0, 0, -1)
+		endDate = now
+	}
+
+	todayStart := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 14, 0, 0, 0, time.UTC)
+	todayEnd := time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 14, 0, 0, 0, time.UTC)
+
+	res := make([]*biz.Location, 0)
+	if err := lr.data.db.Table("location").
+		Where("user_id IN(?)", userIds).
+		Where("created_at>=?", todayStart).Where("created_at<?", todayEnd).
+		Find(&locations).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return res, nil
+		}
+
+		return nil, errors.New(500, "LOCATION ERROR", err.Error())
+	}
+
+	for _, location := range locations {
+		res = append(res, &biz.Location{
+			ID:           location.ID,
+			UserId:       location.UserId,
+			Status:       location.Status,
+			CurrentLevel: location.CurrentLevel,
+			Current:      location.Current,
+			CurrentMax:   location.CurrentMax,
+			Row:          location.Row,
+			Col:          location.Col,
+		})
+	}
+
+	return res, nil
+}
+
 // UpdateLocationRowAndCol 事务中使用 .
 func (lr *LocationRepo) UpdateLocationRowAndCol(ctx context.Context, id int64) error {
 

@@ -229,6 +229,7 @@ message UserInfoReply {
 	string areaMaxAmount = 44;
 	int64 undo = 45;
 	string areaName = 46;
+	string areaTotalTodayAmount = 47;
 }
 
 message RewardListRequest {

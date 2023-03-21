@@ -513,6 +513,8 @@ components:
                     format: int64
                 areaName:
                     type: string
+                areaTotalTodayAmount:
+                    type: string
         UserInfoReply_List:
             type: object
             properties:
