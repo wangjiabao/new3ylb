@@ -115,6 +115,12 @@ service App {
 			get: "/api/admin_dhb/fee"
 		};
 	};
+
+	rpc UploadRecommendUser (UploadRecommendUserRequest) returns (UploadRecommendUserReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/upload_recommend_user"
+		};
+	};
 //
 //	rpc AdminAll (AdminAllRequest) returns (AdminAllReply) {
 //		option (google.api.http) = {
@@ -474,4 +480,10 @@ message AdminConfigUpdateRequest {
 
 message AdminConfigUpdateReply {
 
+}
+
+message UploadRecommendUserRequest {
+}
+
+message UploadRecommendUserReply {
 }

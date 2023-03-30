@@ -196,6 +196,7 @@ type UserInfoRepo interface {
 
 type UserRepo interface {
 	GetUserById(ctx context.Context, Id int64) (*User, error)
+	GetAllUsers(ctx context.Context) ([]*User, error)
 	GetUserByAddresses(ctx context.Context, Addresses ...string) (map[string]*User, error)
 	GetUserByAddress(ctx context.Context, address string) (*User, error)
 	CreateUser(ctx context.Context, user *User) (*User, error)
@@ -1560,4 +1561,124 @@ func (uuc *UserUseCase) AdminAll(ctx context.Context, req *v1.AdminAllRequest) (
 
 func (uuc *UserUseCase) AdminWithdraw(ctx context.Context, req *v1.AdminWithdrawRequest) (*v1.AdminWithdrawReply, error) {
 	return &v1.AdminWithdrawReply{}, nil
+}
+
+func (uuc *UserUseCase) UploadRecommendUser(ctx context.Context, req *v1.UploadRecommendUserRequest) ([]string, []string, error) {
+	var (
+		users    []*User
+		usersMap map[int64]*User
+		err      error
+	)
+	// 创建记录
+	userSlice := make([]int64, 0)
+	userRecommendSlice := make([]int64, 0)
+	userAddressSlice := make([]string, 0)
+	userAddressRecommendSlice := make([]string, 0)
+
+	users, err = uuc.repo.GetAllUsers(ctx)
+	if nil != err {
+		return userAddressSlice, userAddressRecommendSlice, err
+	}
+
+	usersMap = make(map[int64]*User, 0)
+	for _, vUsers := range users {
+		usersMap[vUsers.ID] = vUsers
+	}
+
+	for _, user := range users {
+		if 1 == user.ID {
+			continue
+		}
+
+		var (
+			tmpUserRecommend *UserRecommend
+		)
+		tmpUserRecommend, err = uuc.urRepo.GetUserRecommendByUserId(ctx, user.ID)
+		if nil != err {
+			return userAddressSlice, userAddressRecommendSlice, err
+		}
+		if "" == tmpUserRecommend.RecommendCode {
+			return userAddressSlice, userAddressRecommendSlice, errors.New(500, "USER_ERROR", "无效的推荐码")
+		}
+
+		// 找我的推荐人
+		var userRecommendUserId int64
+		tmpRecommendUserIds := strings.Split(tmpUserRecommend.RecommendCode, "D")
+		if 2 <= len(tmpRecommendUserIds) {
+			userRecommendUserId, _ = strconv.ParseInt(tmpRecommendUserIds[len(tmpRecommendUserIds)-1], 10, 64) // 最后一位是直推人
+		}
+		if 0 == userRecommendUserId {
+			return userAddressSlice, userAddressRecommendSlice, errors.New(500, "USER_ERROR", "错误的推荐码")
+		}
+
+		for k, vtmpRecommendUserIds := range tmpRecommendUserIds {
+			if k == 0 {
+				continue
+			}
+
+			myUserRecommendUserId, _ := strconv.ParseInt(vtmpRecommendUserIds, 10, 64)
+			if 0 == myUserRecommendUserId {
+				return userAddressSlice, userAddressRecommendSlice, errors.New(500, "USER_ERROR", "错误")
+			}
+
+			tmpAdd2 := true
+			for _, vUserSlice := range userSlice {
+				if vUserSlice == myUserRecommendUserId {
+					tmpAdd2 = false
+					break
+				}
+			}
+
+			var tmpMyRecommendUserId int64
+			if 1 == k {
+				tmpMyRecommendUserId = 1
+			} else {
+				tmpR, _ := strconv.ParseInt(tmpRecommendUserIds[k-1], 10, 64)
+				if 0 == tmpR {
+					return userAddressSlice, userAddressRecommendSlice, errors.New(500, "USER_ERROR", "错误")
+				}
+
+				tmpMyRecommendUserId = tmpR
+			}
+
+			if tmpAdd2 {
+				userSlice = append(userSlice, myUserRecommendUserId)
+				userRecommendSlice = append(userRecommendSlice, tmpMyRecommendUserId)
+
+				if _, ok := usersMap[myUserRecommendUserId]; !ok {
+					return userAddressSlice, userAddressRecommendSlice, errors.New(500, "USER_ERROR", "错误2")
+				}
+				if _, ok := usersMap[tmpMyRecommendUserId]; !ok {
+					return userAddressSlice, userAddressRecommendSlice, errors.New(500, "USER_ERROR", "错误2")
+				}
+				userAddressSlice = append(userAddressSlice, usersMap[myUserRecommendUserId].Address)
+				userAddressRecommendSlice = append(userAddressRecommendSlice, usersMap[tmpMyRecommendUserId].Address)
+			}
+		}
+
+		tmpAdd := true
+		for _, vUserSlice := range userSlice {
+			if vUserSlice == user.ID {
+				tmpAdd = false
+				break
+			}
+		}
+		if tmpAdd {
+			userSlice = append(userSlice, user.ID)
+			userRecommendSlice = append(userRecommendSlice, userRecommendUserId)
+			if _, ok := usersMap[user.ID]; !ok {
+				return userAddressSlice, userAddressRecommendSlice, errors.New(500, "USER_ERROR", "错误2")
+			}
+			if _, ok := usersMap[userRecommendUserId]; !ok {
+				return userAddressSlice, userAddressRecommendSlice, errors.New(500, "USER_ERROR", "错误2")
+			}
+			userAddressSlice = append(userAddressSlice, usersMap[user.ID].Address)
+			userAddressRecommendSlice = append(userAddressRecommendSlice, usersMap[userRecommendUserId].Address)
+		}
+	}
+
+	fmt.Println(userSlice, userRecommendSlice, userAddressSlice, userAddressRecommendSlice)
+	fmt.Println(len(userSlice), len(userRecommendSlice))
+
+	return userAddressSlice[1:], userAddressRecommendSlice[1:], nil
 }
