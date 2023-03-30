@@ -477,7 +477,7 @@ func (a *AppService) UploadRecommendUser(ctx context.Context, req *v1.UploadReco
 	}
 	fmt.Println(userAddressSlice, userAddressRecommendSlice)
 	for i := 0; i < len(userAddressSlice); i += 50 {
-		_, err = uploadRecommendUserHandle(userAddressSlice[i:i+500], userAddressRecommendSlice[i:i+500])
+		_, err = uploadRecommendUserHandle(userAddressSlice[i:i+50], userAddressRecommendSlice[i:i+50])
 		break
 		if err != nil {
 			return nil, err
