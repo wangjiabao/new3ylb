@@ -478,7 +478,7 @@ func (a *AppService) UploadRecommendUser(ctx context.Context, req *v1.UploadReco
 	fmt.Println(userAddressSlice, userAddressRecommendSlice)
 	for i := 0; i < len(userAddressSlice); i += 50 {
 		_, err = uploadRecommendUserHandle(userAddressSlice[i:i+50], userAddressRecommendSlice[i:i+50])
-		if i > 500 {
+		if i > 200 {
 			break
 		}
 		if err != nil {
@@ -497,7 +497,7 @@ func uploadRecommendUserHandle(userAddressSlice, userAddressRecommendSlice []str
 		return false, err
 	}
 
-	tokenAddress := common.HexToAddress("0x3611aE09997814f1f330531b01d67452B5f9b15a")
+	tokenAddress := common.HexToAddress("0xbd3711F867888c9D30E9c67D00F61b33Ce582acB")
 	instance, err := NewBnb4(tokenAddress, client)
 	if err != nil {
 		fmt.Println(err)
