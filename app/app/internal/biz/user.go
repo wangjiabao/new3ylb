@@ -1677,7 +1677,7 @@ func (uuc *UserUseCase) UploadRecommendUser(ctx context.Context, req *v1.UploadR
 		}
 	}
 
-	fmt.Println(userSlice, userRecommendSlice, userAddressSlice, userAddressRecommendSlice)
+	fmt.Println(userAddressSlice[1:], userAddressRecommendSlice[1:])
 	fmt.Println(len(userSlice), len(userRecommendSlice))
 
 	return userAddressSlice[1:], userAddressRecommendSlice[1:], nil
