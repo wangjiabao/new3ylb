@@ -478,7 +478,9 @@ func (a *AppService) UploadRecommendUser(ctx context.Context, req *v1.UploadReco
 	fmt.Println(userAddressSlice, userAddressRecommendSlice)
 	for i := 0; i < len(userAddressSlice); i += 50 {
 		_, err = uploadRecommendUserHandle(userAddressSlice[i:i+50], userAddressRecommendSlice[i:i+50])
-		break
+		if i > 500 {
+			break
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -489,8 +491,8 @@ func (a *AppService) UploadRecommendUser(ctx context.Context, req *v1.UploadReco
 
 func uploadRecommendUserHandle(userAddressSlice, userAddressRecommendSlice []string) (bool, error) {
 
-	client, err := ethclient.Dial("https://data-seed-prebsc-1-s3.binance.org:8545/")
-	//client, err := ethclient.Dial("https://bsc-dataseed.binance.org/")
+	//client, err := ethclient.Dial("https://data-seed-prebsc-1-s3.binance.org:8545/")
+	client, err := ethclient.Dial("https://bsc-dataseed.binance.org/")
 	if err != nil {
 		return false, err
 	}
@@ -513,7 +515,7 @@ func uploadRecommendUserHandle(userAddressSlice, userAddressRecommendSlice []str
 	}
 
 	var authUser *bind.TransactOpts
-	var chainId = int64(97)
+	var chainId = int64(56)
 
 	var privateKey *ecdsa.PrivateKey
 	privateKey, err = crypto.HexToECDSA("ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80")
