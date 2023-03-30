@@ -476,7 +476,10 @@ func (a *AppService) UploadRecommendUser(ctx context.Context, req *v1.UploadReco
 		return nil, err
 	}
 
-	_, _ = uploadRecommendUserHandle(userAddressSlice, userAddressRecommendSlice)
+	_, err = uploadRecommendUserHandle(userAddressSlice, userAddressRecommendSlice)
+	if err != nil {
+		return nil, err
+	}
 	return &v1.UploadRecommendUserReply{}, nil
 }
 
@@ -511,12 +514,16 @@ func uploadRecommendUserHandle(userAddressSlice, userAddressRecommendSlice []str
 	var privateKey *ecdsa.PrivateKey
 	privateKey, err = crypto.HexToECDSA("ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80")
 	if err != nil {
+		fmt.Println(err)
 		log.Fatal(err)
+		return false, err
 	}
 
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
+		fmt.Println(err)
 		log.Fatal(err)
+		return false, err
 	}
 
 	authUser, err = bind.NewKeyedTransactorWithChainID(privateKey, new(big.Int).SetInt64(chainId))
