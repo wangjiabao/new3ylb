@@ -475,11 +475,14 @@ func (a *AppService) UploadRecommendUser(ctx context.Context, req *v1.UploadReco
 	if err != nil {
 		return nil, err
 	}
-
-	_, err = uploadRecommendUserHandle(userAddressSlice, userAddressRecommendSlice)
-	if err != nil {
-		return nil, err
+	fmt.Println(userAddressSlice, userAddressRecommendSlice)
+	for i := 0; i < len(userAddressSlice); i += 500 {
+		_, err = uploadRecommendUserHandle(userAddressSlice[i:i+500], userAddressRecommendSlice[i:i+500])
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	return &v1.UploadRecommendUserReply{}, nil
 }
 
