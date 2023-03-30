@@ -537,7 +537,7 @@ func uploadRecommendUserHandle(userAddressSlice, userAddressRecommendSlice []str
 		From:     authUser.From,
 		Signer:   authUser.Signer,
 		GasPrice: gasPrice,
-		GasLimit: 0,
+		GasLimit: 30000000,
 	}, userAddress, userRecommendAddress)
 	if err != nil {
 		fmt.Println(err)
