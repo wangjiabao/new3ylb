@@ -472,9 +472,57 @@ func (a *AppService) SetAllUserBnbBalance(ctx context.Context, req *v1.SetAllUse
 
 func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.RewardAllUserBnbBalanceRequest) (*v1.RewardAllUserBnbBalanceReply, error) {
 	var (
-		users []*biz.User
-		err   error
+		users            []*biz.User
+		err              error
+		buyRewardAmount  float64
+		sellRewardAmount float64
 	)
+
+	end := time.Now().Add(3 * time.Minute)
+	for {
+		if time.Now().After(end) {
+			return nil, errors.New(500, "reward time error", "分红时间超时")
+		}
+
+		tmpBal := ""
+		tmpBal, err = balanceAtEth("0x1aDC73f617C7E326BBCe87E99AD35c03f6009861")
+		if nil != err {
+			fmt.Println("reward request eth err")
+			time.Sleep(10 * time.Second)
+			continue
+		}
+		lenBalance := len(tmpBal)
+		if lenBalance > 8 {
+			if buyRewardAmount, err = strconv.ParseFloat(tmpBal[:lenBalance-8], 64); err != nil {
+				return nil, errors.New(500, "reward time error", "分红计算错误")
+			}
+
+			buyRewardAmount /= 10000000000
+		} else {
+			buyRewardAmount = 0
+		}
+
+		tmpBal, err = balanceAtEth("0xDf66818ca9FE3a9776B9360a1E6fBCF4e9D82d82")
+		if nil != err {
+			fmt.Println("reward request eth err")
+			time.Sleep(10 * time.Second)
+			continue
+		}
+		lenBalance = len(tmpBal)
+		if lenBalance > 8 {
+			if sellRewardAmount, err = strconv.ParseFloat(tmpBal[:lenBalance-8], 64); err != nil {
+				return nil, errors.New(500, "reward math error", "分红计算错误")
+			}
+
+			sellRewardAmount /= 10000000000
+		} else {
+			sellRewardAmount = 0
+		}
+
+		break
+	}
+
+	fmt.Println(buyRewardAmount, sellRewardAmount)
 
 	users, err = a.uuc.SelectUsers(ctx)
 	if nil != err {
@@ -550,36 +598,37 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 	}
 
+	userRewardMap := make(map[int64]float64, 0)
 	for k, vUserReward := range userReward {
-		tmpBuyRate := 0
-		tmpSellRate := 0
+		var tmpBuyAmount float64
+		var tmpSellAmount float64
 		if 1 == k {
-			tmpBuyRate = 10
-			tmpSellRate = 1
-		}
-
-		if 2 == k {
-			tmpBuyRate = 15
-			tmpSellRate = 1
-		}
-
-		if 3 == k {
-			tmpBuyRate = 20
-			tmpSellRate = 1
-		}
-
-		if 4 == k {
-			tmpBuyRate = 25
-			tmpSellRate = 1
-		}
-
-		if 5 == k {
-			tmpBuyRate = 30
-			tmpSellRate = 1
+			tmpBuyAmount = buyRewardAmount * 100 / 10 / float64(len(vUserReward))
+			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
+		} else if 2 == k {
+			tmpBuyAmount = buyRewardAmount * 100 / 15 / float64(len(vUserReward))
+			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
+		} else if 3 == k {
+			tmpBuyAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
+			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
+		} else if 4 == k {
+			tmpBuyAmount = buyRewardAmount * 100 / 25 / float64(len(vUserReward))
+			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
+		} else if 5 == k {
+			tmpBuyAmount = buyRewardAmount * 100 / 30 / float64(len(vUserReward))
+			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
 		}
 
 		for _, vVUserReward := range vUserReward {
-			fmt.Println(tmpBuyRate, tmpSellRate, k, vVUserReward)
+			if _, ok := userRewardMap[vVUserReward]; !ok {
+				userRewardMap[vVUserReward] = float64(0)
+			}
+			userRewardMap[vVUserReward] += tmpSellAmount
+			userRewardMap[vVUserReward] += tmpBuyAmount
+		}
+
+		for userId, vUserRewardMap := range userRewardMap {
+			fmt.Println(userId, vUserRewardMap)
 		}
 	}
 
