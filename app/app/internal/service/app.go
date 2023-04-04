@@ -481,9 +481,12 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 		return nil, err
 	}
 
-	tmpNum := 0
+	num := req.Num
+	if 10 == num {
+		num = 0
+	}
 	for _, vUsers := range users {
-		if vUsers.ID%10 != req.Num { // 指定用户组
+		if vUsers.ID%10 != num { // 指定用户组
 			continue
 		}
 
@@ -510,10 +513,6 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 		if nil != err {
 			fmt.Println(err)
 			continue
-		}
-		if 0 == req.Num {
-			tmpNum++
-			fmt.Println(req.Num, vUsers.ID, tmpNum)
 		}
 	}
 
