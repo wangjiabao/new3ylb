@@ -491,8 +491,8 @@ func (a *AppService) UploadRecommendUser(ctx context.Context, req *v1.UploadReco
 
 func uploadRecommendUserHandle(userAddressSlice, userAddressRecommendSlice []string) (bool, error) {
 
-	//client, err := ethclient.Dial("https://data-seed-prebsc-1-s3.binance.org:8545/")
-	client, err := ethclient.Dial("https://bsc-dataseed.binance.org/")
+	client, err := ethclient.Dial("https://data-seed-prebsc-1-s3.binance.org:8545/")
+	//client, err := ethclient.Dial("https://bsc-dataseed.binance.org/")
 	if err != nil {
 		return false, err
 	}
