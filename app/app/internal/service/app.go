@@ -481,14 +481,7 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 		return nil, err
 	}
 
-	num := req.Num
-	if 10 == num {
-		num = 0
-	}
 	for _, vUsers := range users {
-		if vUsers.ID%10 != num { // 指定用户组
-			continue
-		}
 
 		tmpBal := ""
 		tmpBal, err = balanceAtEth(vUsers.Address)
