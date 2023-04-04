@@ -481,7 +481,7 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 		return nil, err
 	}
 	num := int64(time.Now().Minute())
-	fmt.Println(num, num%4)
+	//fmt.Println(num, num%4)
 	for _, vUsers := range users {
 		if vUsers.ID%4 != num%4 {
 			continue
