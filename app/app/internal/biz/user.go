@@ -242,10 +242,10 @@ func (uuc *UserUseCase) GetExistUserByAddressOrCreate(ctx context.Context, u *Us
 		userRecommend *UserRecommend
 		userInfo      *UserInfo
 		userBalance   *UserBalance
-		bnbBalance    *BnbBalance
-		err           error
-		userId        int64
-		decodeBytes   []byte
+		//bnbBalance    *BnbBalance
+		err         error
+		userId      int64
+		decodeBytes []byte
 	)
 
 	user, err = uuc.repo.GetUserByAddress(ctx, u.Address) // 查询用户
