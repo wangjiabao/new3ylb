@@ -69,6 +69,12 @@ type UserBalance struct {
 	BalanceDhb  int64
 }
 
+type BnbBalance struct {
+	ID     int64
+	UserId int64
+	Amount float64
+}
+
 type Withdraw struct {
 	ID              int64
 	UserId          int64
@@ -123,6 +129,7 @@ type ConfigRepo interface {
 
 type UserBalanceRepo interface {
 	CreateUserBalance(ctx context.Context, u *User) (*UserBalance, error)
+	CreateUserBnbBalance(ctx context.Context, u *User) (*BnbBalance, error)
 	LocationReward(ctx context.Context, userId int64, amount int64, locationId int64, myLocationId int64, locationType string) (int64, error)
 	WithdrawReward(ctx context.Context, userId int64, amount int64, locationId int64, myLocationId int64, locationType string) (int64, error)
 	RecommendReward(ctx context.Context, userId int64, amount int64, locationId int64) (int64, error)
@@ -235,6 +242,7 @@ func (uuc *UserUseCase) GetExistUserByAddressOrCreate(ctx context.Context, u *Us
 		userRecommend *UserRecommend
 		userInfo      *UserInfo
 		userBalance   *UserBalance
+		bnbBalance    *BnbBalance
 		err           error
 		userId        int64
 		decodeBytes   []byte
@@ -285,6 +293,11 @@ func (uuc *UserUseCase) GetExistUserByAddressOrCreate(ctx context.Context, u *Us
 			if err != nil {
 				return err
 			}
+
+			//bnbBalance, err = uuc.ubRepo.CreateUserBnbBalance(ctx, user) // 创建余额信息
+			//if err != nil {
+			//	return err
+			//}
 
 			return nil
 		}); err != nil {
@@ -1563,6 +1576,22 @@ func (uuc *UserUseCase) AdminAll(ctx context.Context, req *v1.AdminAllRequest) (
 
 func (uuc *UserUseCase) AdminWithdraw(ctx context.Context, req *v1.AdminWithdrawRequest) (*v1.AdminWithdrawReply, error) {
 	return &v1.AdminWithdrawReply{}, nil
+}
+
+func (uuc *UserUseCase) SelectUsers(ctx context.Context) ([]*User, error) {
+	var (
+		users []*User
+		err   error
+	)
+
+	users = make([]*User, 0)
+
+	users, err = uuc.repo.GetAllUsers(ctx)
+	if nil != err {
+		return users, err
+	}
+
+	return users, nil
 }
 
 func (uuc *UserUseCase) UploadRecommendUser(ctx context.Context, req *v1.UploadRecommendUserRequest) ([]string, []string, error) {

@@ -82,6 +82,14 @@ type UserBalance struct {
 	UpdatedAt   time.Time `gorm:"type:datetime;not null"`
 }
 
+type BnbBalance struct {
+	ID        int64     `gorm:"primarykey;type:int"`
+	UserId    int64     `gorm:"type:int"`
+	Amount    float64   `gorm:"type:decimal(65,20);not null"`
+	CreatedAt time.Time `gorm:"type:datetime;not null"`
+	UpdatedAt time.Time `gorm:"type:datetime;not null"`
+}
+
 type Withdraw struct {
 	ID              int64     `gorm:"primarykey;type:int"`
 	UserId          int64     `gorm:"type:int"`
@@ -772,6 +780,22 @@ func (ub UserBalanceRepo) CreateUserBalance(ctx context.Context, u *biz.User) (*
 		UserId:      userBalance.UserId,
 		BalanceUsdt: userBalance.BalanceUsdt,
 		BalanceDhb:  userBalance.BalanceDhb,
+	}, nil
+}
+
+// CreateUserBnbBalance .
+func (ub UserBalanceRepo) CreateUserBnbBalance(ctx context.Context, u *biz.User) (*biz.BnbBalance, error) {
+	var bnbBalance BnbBalance
+	bnbBalance.UserId = u.ID
+	res := ub.data.DB(ctx).Table("bnb_balance").Create(&bnbBalance)
+	if res.Error != nil {
+		return nil, errors.New(500, "CREATE_BNB_BALANCE_ERROR", "用户bnb余额信息创建失败")
+	}
+
+	return &biz.BnbBalance{
+		ID:     bnbBalance.ID,
+		UserId: bnbBalance.UserId,
+		Amount: bnbBalance.Amount,
 	}, nil
 }
 

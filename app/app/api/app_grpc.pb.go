@@ -61,6 +61,7 @@ type AppClient interface {
 	AdminWithdrawEth(ctx context.Context, in *AdminWithdrawEthRequest, opts ...grpc.CallOption) (*AdminWithdrawEthReply, error)
 	AdminFee(ctx context.Context, in *AdminFeeRequest, opts ...grpc.CallOption) (*AdminFeeReply, error)
 	UploadRecommendUser(ctx context.Context, in *UploadRecommendUserRequest, opts ...grpc.CallOption) (*UploadRecommendUserReply, error)
+	UpdateUserBnbBalance(ctx context.Context, in *UpdateUserBnbBalanceRequest, opts ...grpc.CallOption) (*UpdateUserBnbBalanceReply, error)
 }
 
 type appClient struct {
@@ -197,6 +198,15 @@ func (c *appClient) UploadRecommendUser(ctx context.Context, in *UploadRecommend
 	return out, nil
 }
 
+func (c *appClient) UpdateUserBnbBalance(ctx context.Context, in *UpdateUserBnbBalanceRequest, opts ...grpc.CallOption) (*UpdateUserBnbBalanceReply, error) {
+	out := new(UpdateUserBnbBalanceReply)
+	err := c.cc.Invoke(ctx, "/api.App/UpdateUserBnbBalance", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AppServer is the server API for App service.
 // All implementations must embed UnimplementedAppServer
 // for forward compatibility
@@ -240,6 +250,7 @@ type AppServer interface {
 	AdminWithdrawEth(context.Context, *AdminWithdrawEthRequest) (*AdminWithdrawEthReply, error)
 	AdminFee(context.Context, *AdminFeeRequest) (*AdminFeeReply, error)
 	UploadRecommendUser(context.Context, *UploadRecommendUserRequest) (*UploadRecommendUserReply, error)
+	UpdateUserBnbBalance(context.Context, *UpdateUserBnbBalanceRequest) (*UpdateUserBnbBalanceReply, error)
 	mustEmbedUnimplementedAppServer()
 }
 
@@ -288,6 +299,9 @@ func (UnimplementedAppServer) AdminFee(context.Context, *AdminFeeRequest) (*Admi
 }
 func (UnimplementedAppServer) UploadRecommendUser(context.Context, *UploadRecommendUserRequest) (*UploadRecommendUserReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadRecommendUser not implemented")
+}
+func (UnimplementedAppServer) UpdateUserBnbBalance(context.Context, *UpdateUserBnbBalanceRequest) (*UpdateUserBnbBalanceReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserBnbBalance not implemented")
 }
 func (UnimplementedAppServer) mustEmbedUnimplementedAppServer() {}
 
@@ -554,6 +568,24 @@ func _App_UploadRecommendUser_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _App_UpdateUserBnbBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserBnbBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).UpdateUserBnbBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.App/UpdateUserBnbBalance",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).UpdateUserBnbBalance(ctx, req.(*UpdateUserBnbBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // App_ServiceDesc is the grpc.ServiceDesc for App service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -616,6 +648,10 @@ var App_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadRecommendUser",
 			Handler:    _App_UploadRecommendUser_Handler,
+		},
+		{
+			MethodName: "UpdateUserBnbBalance",
+			Handler:    _App_UpdateUserBnbBalance_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

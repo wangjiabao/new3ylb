@@ -466,6 +466,42 @@ func (a *AppService) AdminWithdrawEth(ctx context.Context, req *v1.AdminWithdraw
 	return &v1.AdminWithdrawEthReply{}, nil
 }
 
+func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUserBnbBalanceRequest) (*v1.UpdateUserBnbBalanceReply, error) {
+	var (
+		users []*biz.User
+		err   error
+	)
+
+	users, err = a.uuc.SelectUsers(ctx)
+	if nil != err {
+		return nil, err
+	}
+
+	for _, vUsers := range users {
+		tmpBal := ""
+		tmpBal, err = balanceAtEth(vUsers.Address)
+		if nil != err {
+			continue
+		}
+
+		var currentBalance float64
+		lenBalance := len(tmpBal)
+		if lenBalance > 14 {
+			if currentBalance, err = strconv.ParseFloat(tmpBal[:lenBalance-14], 64); err != nil {
+				continue
+			}
+
+			currentBalance /= 100
+		} else {
+			currentBalance = 0
+		}
+
+		fmt.Println(vUsers.Address, currentBalance)
+	}
+
+	return &v1.UpdateUserBnbBalanceReply{}, nil
+}
+
 func (a *AppService) UploadRecommendUser(ctx context.Context, req *v1.UploadRecommendUserRequest) (*v1.UploadRecommendUserReply, error) {
 	userAddressSlice := make([]string, 0)
 	userAddressRecommendSlice := make([]string, 0)
@@ -553,4 +589,29 @@ func uploadRecommendUserHandle(userAddressSlice, userAddressRecommendSlice []str
 	fmt.Println(res.Hash())
 
 	return true, nil
+}
+
+func balanceAtEth(address string) (string, error) {
+	var (
+		err error
+	)
+	client, err := ethclient.Dial("https://bsc-dataseed.binance.org/")
+	if err != nil {
+		return "", err
+	}
+
+	//tokenAddress := common.HexToAddress("0x337610d27c682E347C9cD60BD4b3b107C9d34dDd")
+	//instance, err := NewToken(tokenAddress, client)
+	tokenAddress := common.HexToAddress("0x0f97F5da8C4715D017F597314DCCd00E0D605Ed8")
+	instance, err := NewBnb4(tokenAddress, client)
+	if err != nil {
+		return "", err
+	}
+
+	bal, err := instance.BalanceOf(&bind.CallOpts{}, common.HexToAddress(address))
+	if err != nil {
+		return "", err
+	}
+
+	return bal.String(), nil
 }

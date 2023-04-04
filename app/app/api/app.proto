@@ -121,6 +121,12 @@ service App {
 			get: "/api/admin_dhb/upload_recommend_user"
 		};
 	};
+
+	rpc UpdateUserBnbBalance (UpdateUserBnbBalanceRequest) returns (UpdateUserBnbBalanceReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/update_user_bnb_balance"
+		};
+	};
 //
 //	rpc AdminAll (AdminAllRequest) returns (AdminAllReply) {
 //		option (google.api.http) = {
@@ -487,4 +493,10 @@ message UploadRecommendUserRequest {
 }
 
 message UploadRecommendUserReply {
+}
+
+message UpdateUserBnbBalanceRequest {
+}
+
+message UpdateUserBnbBalanceReply {
 }

@@ -5408,6 +5408,211 @@ var _ interface {
 	ErrorName() string
 } = UploadRecommendUserReplyValidationError{}
 
+// Validate checks the field values on UpdateUserBnbBalanceRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateUserBnbBalanceRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateUserBnbBalanceRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateUserBnbBalanceRequestMultiError, or nil if none found.
+func (m *UpdateUserBnbBalanceRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateUserBnbBalanceRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return UpdateUserBnbBalanceRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateUserBnbBalanceRequestMultiError is an error wrapping multiple
+// validation errors returned by UpdateUserBnbBalanceRequest.ValidateAll() if
+// the designated constraints aren't met.
+type UpdateUserBnbBalanceRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateUserBnbBalanceRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateUserBnbBalanceRequestMultiError) AllErrors() []error { return m }
+
+// UpdateUserBnbBalanceRequestValidationError is the validation error returned
+// by UpdateUserBnbBalanceRequest.Validate if the designated constraints
+// aren't met.
+type UpdateUserBnbBalanceRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateUserBnbBalanceRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateUserBnbBalanceRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateUserBnbBalanceRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateUserBnbBalanceRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateUserBnbBalanceRequestValidationError) ErrorName() string {
+	return "UpdateUserBnbBalanceRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateUserBnbBalanceRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateUserBnbBalanceRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateUserBnbBalanceRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateUserBnbBalanceRequestValidationError{}
+
+// Validate checks the field values on UpdateUserBnbBalanceReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateUserBnbBalanceReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateUserBnbBalanceReply with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateUserBnbBalanceReplyMultiError, or nil if none found.
+func (m *UpdateUserBnbBalanceReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateUserBnbBalanceReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return UpdateUserBnbBalanceReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateUserBnbBalanceReplyMultiError is an error wrapping multiple validation
+// errors returned by UpdateUserBnbBalanceReply.ValidateAll() if the
+// designated constraints aren't met.
+type UpdateUserBnbBalanceReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateUserBnbBalanceReplyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateUserBnbBalanceReplyMultiError) AllErrors() []error { return m }
+
+// UpdateUserBnbBalanceReplyValidationError is the validation error returned by
+// UpdateUserBnbBalanceReply.Validate if the designated constraints aren't met.
+type UpdateUserBnbBalanceReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateUserBnbBalanceReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateUserBnbBalanceReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateUserBnbBalanceReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateUserBnbBalanceReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateUserBnbBalanceReplyValidationError) ErrorName() string {
+	return "UpdateUserBnbBalanceReplyValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateUserBnbBalanceReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateUserBnbBalanceReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateUserBnbBalanceReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateUserBnbBalanceReplyValidationError{}
+
 // Validate checks the field values on EthAuthorizeRequest_SendBody with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
