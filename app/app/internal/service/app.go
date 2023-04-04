@@ -528,6 +528,7 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 	if nil != err {
 		return nil, err
 	}
+	tmpErrNum := 0
 	num := int64(time.Now().Minute())
 	//fmt.Println(num, num%4)
 	for _, vUsers := range users {
@@ -539,6 +540,7 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 		tmpBal, err = balanceAtEth(vUsers.Address)
 		if nil != err {
 			//fmt.Println(vUsers.ID, "request bnb4 balance err")
+			tmpErrNum++
 			continue
 		}
 		//fmt.Println(num, num%4, tmpBal)
@@ -560,6 +562,9 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 			fmt.Println(err)
 			continue
 		}
+	}
+	if tmpErrNum > 0 {
+		fmt.Println(tmpErrNum, num, num%5)
 	}
 
 	return &v1.UpdateUserBnbBalanceReply{}, nil
