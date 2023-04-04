@@ -630,10 +630,8 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 
 		for userId, vUserRewardMap := range userRewardMap {
 			if userId == 2 {
-
 				fmt.Println(userId, vUserRewardMap)
 			} else if userId == 1 {
-
 				fmt.Println(userId, vUserRewardMap)
 			}
 		}
