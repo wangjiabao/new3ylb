@@ -127,6 +127,12 @@ service App {
 			get: "/api/admin_dhb/update_user_bnb_balance"
 		};
 	};
+
+	rpc SetAllUserBnbBalance (SetAllUserBnbBalanceRequest) returns (SetAllUserBnbBalanceReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/set_all_user_bnb_balance"
+		};
+	};
 //
 //	rpc AdminAll (AdminAllRequest) returns (AdminAllReply) {
 //		option (google.api.http) = {
@@ -496,7 +502,14 @@ message UploadRecommendUserReply {
 }
 
 message UpdateUserBnbBalanceRequest {
+	int64 num = 1;
 }
 
 message UpdateUserBnbBalanceReply {
+}
+
+message SetAllUserBnbBalanceRequest {
+}
+
+message SetAllUserBnbBalanceReply {
 }

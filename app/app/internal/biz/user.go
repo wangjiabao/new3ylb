@@ -130,6 +130,7 @@ type ConfigRepo interface {
 type UserBalanceRepo interface {
 	CreateUserBalance(ctx context.Context, u *User) (*UserBalance, error)
 	CreateUserBnbBalance(ctx context.Context, u *User) (*BnbBalance, error)
+	GetUserBnbBalanceByUserId(ctx context.Context, userId int64) (*BnbBalance, error)
 	LocationReward(ctx context.Context, userId int64, amount int64, locationId int64, myLocationId int64, locationType string) (int64, error)
 	WithdrawReward(ctx context.Context, userId int64, amount int64, locationId int64, myLocationId int64, locationType string) (int64, error)
 	RecommendReward(ctx context.Context, userId int64, amount int64, locationId int64) (int64, error)
@@ -242,10 +243,10 @@ func (uuc *UserUseCase) GetExistUserByAddressOrCreate(ctx context.Context, u *Us
 		userRecommend *UserRecommend
 		userInfo      *UserInfo
 		userBalance   *UserBalance
-		//bnbBalance    *BnbBalance
-		err         error
-		userId      int64
-		decodeBytes []byte
+		bnbBalance    *BnbBalance
+		err           error
+		userId        int64
+		decodeBytes   []byte
 	)
 
 	user, err = uuc.repo.GetUserByAddress(ctx, u.Address) // 查询用户
@@ -294,10 +295,10 @@ func (uuc *UserUseCase) GetExistUserByAddressOrCreate(ctx context.Context, u *Us
 				return err
 			}
 
-			//bnbBalance, err = uuc.ubRepo.CreateUserBnbBalance(ctx, user) // 创建余额信息
-			//if err != nil {
-			//	return err
-			//}
+			bnbBalance, err = uuc.ubRepo.CreateUserBnbBalance(ctx, user) // 创建余额信息
+			if err != nil {
+				return err
+			}
 
 			return nil
 		}); err != nil {
@@ -1369,6 +1370,40 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 	_, err = uuc.configRepo.UpdateConfig(ctx, req.SendBody.Id, req.SendBody.Value)
 	if nil != err {
 		return res, err
+	}
+
+	return res, nil
+}
+
+func (uuc *UserUseCase) SetAllUserBnbBalance(ctx context.Context, req *v1.SetAllUserBnbBalanceRequest) (*v1.SetAllUserBnbBalanceReply, error) {
+	var (
+		users []*User
+		err   error
+	)
+
+	res := &v1.SetAllUserBnbBalanceReply{}
+
+	users, err = uuc.repo.GetAllUsers(ctx)
+	if nil != err {
+		return res, err
+	}
+
+	for _, vUsers := range users {
+		var (
+			tmpBnbBalance *BnbBalance
+		)
+
+		tmpBnbBalance, err = uuc.ubRepo.GetUserBnbBalanceByUserId(ctx, vUsers.ID)
+		if nil != err {
+			return nil, err
+		}
+
+		if nil == tmpBnbBalance {
+			tmpBnbBalance, err = uuc.ubRepo.CreateUserBnbBalance(ctx, vUsers)
+			if nil != err {
+				return nil, err
+			}
+		}
 	}
 
 	return res, nil

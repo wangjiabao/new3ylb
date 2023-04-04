@@ -799,6 +799,22 @@ func (ub UserBalanceRepo) CreateUserBnbBalance(ctx context.Context, u *biz.User)
 	}, nil
 }
 
+func (ub *UserBalanceRepo) GetUserBnbBalanceByUserId(ctx context.Context, userId int64) (*biz.BnbBalance, error) {
+	var bnbBalance BnbBalance
+	if err := ub.data.db.Where("user_id=?", userId).Table("bnb_balance").First(&bnbBalance).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+
+		return nil, errors.New(500, "BNB BALANCE ERROR", err.Error())
+	}
+	return &biz.BnbBalance{
+		ID:     bnbBalance.ID,
+		UserId: bnbBalance.UserId,
+		Amount: bnbBalance.Amount,
+	}, nil
+}
+
 // GetUserBalance .
 func (ub UserBalanceRepo) GetUserBalance(ctx context.Context, userId int64) (*biz.UserBalance, error) {
 	var userBalance UserBalance

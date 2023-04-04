@@ -62,6 +62,7 @@ type AppClient interface {
 	AdminFee(ctx context.Context, in *AdminFeeRequest, opts ...grpc.CallOption) (*AdminFeeReply, error)
 	UploadRecommendUser(ctx context.Context, in *UploadRecommendUserRequest, opts ...grpc.CallOption) (*UploadRecommendUserReply, error)
 	UpdateUserBnbBalance(ctx context.Context, in *UpdateUserBnbBalanceRequest, opts ...grpc.CallOption) (*UpdateUserBnbBalanceReply, error)
+	SetAllUserBnbBalance(ctx context.Context, in *SetAllUserBnbBalanceRequest, opts ...grpc.CallOption) (*SetAllUserBnbBalanceReply, error)
 }
 
 type appClient struct {
@@ -207,6 +208,15 @@ func (c *appClient) UpdateUserBnbBalance(ctx context.Context, in *UpdateUserBnbB
 	return out, nil
 }
 
+func (c *appClient) SetAllUserBnbBalance(ctx context.Context, in *SetAllUserBnbBalanceRequest, opts ...grpc.CallOption) (*SetAllUserBnbBalanceReply, error) {
+	out := new(SetAllUserBnbBalanceReply)
+	err := c.cc.Invoke(ctx, "/api.App/SetAllUserBnbBalance", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AppServer is the server API for App service.
 // All implementations must embed UnimplementedAppServer
 // for forward compatibility
@@ -251,6 +261,7 @@ type AppServer interface {
 	AdminFee(context.Context, *AdminFeeRequest) (*AdminFeeReply, error)
 	UploadRecommendUser(context.Context, *UploadRecommendUserRequest) (*UploadRecommendUserReply, error)
 	UpdateUserBnbBalance(context.Context, *UpdateUserBnbBalanceRequest) (*UpdateUserBnbBalanceReply, error)
+	SetAllUserBnbBalance(context.Context, *SetAllUserBnbBalanceRequest) (*SetAllUserBnbBalanceReply, error)
 	mustEmbedUnimplementedAppServer()
 }
 
@@ -302,6 +313,9 @@ func (UnimplementedAppServer) UploadRecommendUser(context.Context, *UploadRecomm
 }
 func (UnimplementedAppServer) UpdateUserBnbBalance(context.Context, *UpdateUserBnbBalanceRequest) (*UpdateUserBnbBalanceReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserBnbBalance not implemented")
+}
+func (UnimplementedAppServer) SetAllUserBnbBalance(context.Context, *SetAllUserBnbBalanceRequest) (*SetAllUserBnbBalanceReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetAllUserBnbBalance not implemented")
 }
 func (UnimplementedAppServer) mustEmbedUnimplementedAppServer() {}
 
@@ -586,6 +600,24 @@ func _App_UpdateUserBnbBalance_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _App_SetAllUserBnbBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetAllUserBnbBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).SetAllUserBnbBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.App/SetAllUserBnbBalance",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).SetAllUserBnbBalance(ctx, req.(*SetAllUserBnbBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // App_ServiceDesc is the grpc.ServiceDesc for App service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -652,6 +684,10 @@ var App_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateUserBnbBalance",
 			Handler:    _App_UpdateUserBnbBalance_Handler,
+		},
+		{
+			MethodName: "SetAllUserBnbBalance",
+			Handler:    _App_SetAllUserBnbBalance_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

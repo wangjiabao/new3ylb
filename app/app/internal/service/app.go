@@ -466,6 +466,10 @@ func (a *AppService) AdminWithdrawEth(ctx context.Context, req *v1.AdminWithdraw
 	return &v1.AdminWithdrawEthReply{}, nil
 }
 
+func (a *AppService) SetAllUserBnbBalance(ctx context.Context, req *v1.SetAllUserBnbBalanceRequest) (*v1.SetAllUserBnbBalanceReply, error) {
+	return a.uuc.SetAllUserBnbBalance(ctx, req)
+}
+
 func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUserBnbBalanceRequest) (*v1.UpdateUserBnbBalanceReply, error) {
 	var (
 		users []*biz.User
@@ -478,9 +482,14 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 	}
 
 	for _, vUsers := range users {
+		if vUsers.ID%10 != req.Num { // 指定用户组
+			continue
+		}
+
 		tmpBal := ""
 		tmpBal, err = balanceAtEth(vUsers.Address)
 		if nil != err {
+			fmt.Println(err)
 			continue
 		}
 
@@ -491,7 +500,7 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 				continue
 			}
 
-			currentBalance /= 100
+			currentBalance /= 10000
 		} else {
 			currentBalance = 0
 		}
