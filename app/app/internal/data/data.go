@@ -9,7 +9,10 @@ import (
 	"github.com/google/wire"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	slog "log"
+	"os"
 	"time"
 )
 
@@ -60,20 +63,20 @@ func (d *Data) DB(ctx context.Context) *gorm.DB {
 // NewDB .
 func NewDB(c *conf.Data) *gorm.DB {
 	// 终端打印输入 sql 执行记录
-	//newLogger := logger.New(
-	//	slog.New(os.Stdout, "\r\n", slog.LstdFlags), // io writer
-	//	logger.Config{
-	//		SlowThreshold: time.Second, // 慢查询 SQL 阈值
-	//		Colorful:      true,        // 禁用彩色打印
-	//		//IgnoreRecordNotFoundError: false,
-	//		LogLevel: logger.Info, // Log lever
-	//	},
-	//)
+	newLogger := logger.New(
+		slog.New(os.Stdout, "\r\n", slog.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:             3 * time.Second, // 慢查询 SQL 阈值
+			Colorful:                  true,            // 禁用彩色打印
+			IgnoreRecordNotFoundError: false,
+			LogLevel:                  logger.Error, // Log lever
+		},
+	)
 
 	db, err := gorm.Open(mysql.Open(c.Database.Source), &gorm.Config{
-		//Logger:                                   newLogger,
+		Logger:                                   newLogger,
 		DisableForeignKeyConstraintWhenMigrating: true,
-		NamingStrategy: schema.NamingStrategy{
+		NamingStrategy:                           schema.NamingStrategy{
 			//SingularTable: true, // 表名是否加 s
 		},
 	})
