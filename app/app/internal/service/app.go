@@ -481,6 +481,8 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		return nil, err
 	}
 
+	userReward := make(map[int64][]int64, 0)
+
 	for _, vUsers := range users {
 		var (
 			tmpUserRecommend           *biz.UserRecommend
@@ -512,7 +514,73 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			return nil, err
 		}
 
-		fmt.Println(vUsers.ID, tmpBalanceAll)
+		if tmpBalanceAll > 1000 {
+			if _, ok := userReward[1]; !ok {
+				userReward[1] = make([]int64, 0)
+			}
+			userReward[1] = append(userReward[1], vUsers.ID)
+		}
+
+		if tmpBalanceAll >= 10001 {
+			if _, ok := userReward[2]; !ok {
+				userReward[2] = make([]int64, 0)
+			}
+			userReward[2] = append(userReward[2], vUsers.ID)
+		}
+
+		if tmpBalanceAll >= 50001 {
+			if _, ok := userReward[3]; !ok {
+				userReward[3] = make([]int64, 0)
+			}
+			userReward[3] = append(userReward[3], vUsers.ID)
+		}
+
+		if tmpBalanceAll >= 100001 {
+			if _, ok := userReward[4]; !ok {
+				userReward[4] = make([]int64, 0)
+			}
+			userReward[4] = append(userReward[4], vUsers.ID)
+		}
+
+		if tmpBalanceAll >= 150001 {
+			if _, ok := userReward[5]; !ok {
+				userReward[5] = make([]int64, 0)
+			}
+			userReward[5] = append(userReward[5], vUsers.ID)
+		}
+	}
+
+	for k, vUserReward := range userReward {
+		tmpBuyRate := 0
+		tmpSellRate := 0
+		if 1 == k {
+			tmpBuyRate = 10
+			tmpSellRate = 1
+		}
+
+		if 2 == k {
+			tmpBuyRate = 15
+			tmpSellRate = 1
+		}
+
+		if 3 == k {
+			tmpBuyRate = 20
+			tmpSellRate = 1
+		}
+
+		if 4 == k {
+			tmpBuyRate = 25
+			tmpSellRate = 1
+		}
+
+		if 5 == k {
+			tmpBuyRate = 30
+			tmpSellRate = 1
+		}
+
+		for _, vVUserReward := range vUserReward {
+			fmt.Println(tmpBuyRate, tmpSellRate, k, vVUserReward)
+		}
 	}
 
 	return &v1.RewardAllUserBnbBalanceReply{}, nil
