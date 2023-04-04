@@ -486,7 +486,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			tmpUserRecommend           *biz.UserRecommend
 			tmpUserRecommendLow        []*biz.UserRecommend
 			tmpUserRecommendLowUserIds []int64
-			tmpBalanceAll              int64
+			tmpBalanceAll              float64
 		)
 		tmpUserRecommend, err = a.uuc.GetUserRecommend(ctx, vUsers.ID)
 		if nil != err {

@@ -1905,6 +1905,10 @@ type UserBalanceTotal struct {
 	Total int64
 }
 
+type UserBnbBalanceTotal struct {
+	Total float64
+}
+
 type UserSortRecommendReward struct {
 	UserId int64
 	Total  int64
@@ -1942,8 +1946,8 @@ func (ub UserBalanceRepo) GetUserBalanceRecordUsdtTotal(ctx context.Context) (in
 }
 
 // GetUserBnbBalanceByUserIds .
-func (ub UserBalanceRepo) GetUserBnbBalanceByUserIds(ctx context.Context, userIds []int64) (int64, error) {
-	var total UserBalanceTotal
+func (ub UserBalanceRepo) GetUserBnbBalanceByUserIds(ctx context.Context, userIds []int64) (float64, error) {
+	var total UserBnbBalanceTotal
 	if err := ub.data.db.Table("bnb_balance").
 		Where("user_id in(?)", userIds).
 		Select("sum(amount) as total").Take(&total).Error; err != nil {

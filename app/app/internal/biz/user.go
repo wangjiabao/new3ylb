@@ -164,7 +164,7 @@ type UserBalanceRepo interface {
 	GetWithdrawNotDeal(ctx context.Context) ([]*Withdraw, error)
 	GetUserBalanceRecordUserUsdtTotal(ctx context.Context, userId int64) (int64, error)
 	GetUserBalanceRecordUsdtTotal(ctx context.Context) (int64, error)
-	GetUserBnbBalanceByUserIds(ctx context.Context, userIds []int64) (int64, error)
+	GetUserBnbBalanceByUserIds(ctx context.Context, userIds []int64) (float64, error)
 	GetUserBalanceRecordUsdtTotalToday(ctx context.Context) (int64, error)
 	GetUserWithdrawUsdtTotalToday(ctx context.Context) (int64, error)
 	GetUserWithdrawUsdtTotal(ctx context.Context) (int64, error)
@@ -1661,7 +1661,7 @@ func (uuc *UserUseCase) GetUserLow(ctx context.Context, code string) ([]*UserRec
 	return users, nil
 }
 
-func (uuc *UserUseCase) GetUserBnbBalance(ctx context.Context, userIds []int64) (int64, error) {
+func (uuc *UserUseCase) GetUserBnbBalance(ctx context.Context, userIds []int64) (float64, error) {
 	return uuc.ubRepo.GetUserBnbBalanceByUserIds(ctx, userIds)
 }
 
