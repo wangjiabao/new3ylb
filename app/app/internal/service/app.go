@@ -470,6 +470,54 @@ func (a *AppService) SetAllUserBnbBalance(ctx context.Context, req *v1.SetAllUse
 	return a.uuc.SetAllUserBnbBalance(ctx, req)
 }
 
+func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.RewardAllUserBnbBalanceRequest) (*v1.RewardAllUserBnbBalanceReply, error) {
+	var (
+		users []*biz.User
+		err   error
+	)
+
+	users, err = a.uuc.SelectUsers(ctx)
+	if nil != err {
+		return nil, err
+	}
+
+	for _, vUsers := range users {
+		var (
+			tmpUserRecommend           *biz.UserRecommend
+			tmpUserRecommendLow        []*biz.UserRecommend
+			tmpUserRecommendLowUserIds []int64
+			tmpBalanceAll              int64
+		)
+		tmpUserRecommend, err = a.uuc.GetUserRecommend(ctx, vUsers.ID)
+		if nil != err {
+			return nil, err
+		}
+
+		tmpUserRecommendLow, err = a.uuc.GetUserLow(ctx, tmpUserRecommend.RecommendCode)
+		if nil != err {
+			return nil, err
+		}
+
+		for _, vTmpUserRecommendLow := range tmpUserRecommendLow {
+			tmpUserRecommendLowUserIds = append(tmpUserRecommendLowUserIds, vTmpUserRecommendLow.UserId)
+		}
+
+		if 0 <= len(tmpUserRecommendLowUserIds) {
+			continue
+		}
+
+		tmpUserRecommendLowUserIds = append(tmpUserRecommendLowUserIds, vUsers.ID)
+		tmpBalanceAll, err = a.uuc.GetUserBnbBalance(ctx, tmpUserRecommendLowUserIds)
+		if nil != err {
+			return nil, err
+		}
+
+		fmt.Println(vUsers.ID, tmpBalanceAll)
+	}
+
+	return &v1.RewardAllUserBnbBalanceReply{}, nil
+}
+
 func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUserBnbBalanceRequest) (*v1.UpdateUserBnbBalanceReply, error) {
 	var (
 		users []*biz.User

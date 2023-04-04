@@ -28,6 +28,7 @@ const OperationAppFeeRewardList = "/api.App/FeeRewardList"
 const OperationAppRecommendList = "/api.App/RecommendList"
 const OperationAppRecommendRewardList = "/api.App/RecommendRewardList"
 const OperationAppRecommendUpdate = "/api.App/RecommendUpdate"
+const OperationAppRewardAllUserBnbBalance = "/api.App/RewardAllUserBnbBalance"
 const OperationAppRewardList = "/api.App/RewardList"
 const OperationAppSetAllUserBnbBalance = "/api.App/SetAllUserBnbBalance"
 const OperationAppUpdateUserBnbBalance = "/api.App/UpdateUserBnbBalance"
@@ -46,6 +47,7 @@ type AppHTTPServer interface {
 	RecommendList(context.Context, *RecommendListRequest) (*RecommendListReply, error)
 	RecommendRewardList(context.Context, *RecommendRewardListRequest) (*RecommendRewardListReply, error)
 	RecommendUpdate(context.Context, *RecommendUpdateRequest) (*RecommendUpdateReply, error)
+	RewardAllUserBnbBalance(context.Context, *RewardAllUserBnbBalanceRequest) (*RewardAllUserBnbBalanceReply, error)
 	RewardList(context.Context, *RewardListRequest) (*RewardListReply, error)
 	SetAllUserBnbBalance(context.Context, *SetAllUserBnbBalanceRequest) (*SetAllUserBnbBalanceReply, error)
 	UpdateUserBnbBalance(context.Context, *UpdateUserBnbBalanceRequest) (*UpdateUserBnbBalanceReply, error)
@@ -73,6 +75,7 @@ func RegisterAppHTTPServer(s *http.Server, srv AppHTTPServer) {
 	r.GET("/api/admin_dhb/upload_recommend_user", _App_UploadRecommendUser0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/update_user_bnb_balance", _App_UpdateUserBnbBalance0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/set_all_user_bnb_balance", _App_SetAllUserBnbBalance0_HTTP_Handler(srv))
+	r.GET("/api/admin_dhb/reward_all_user_bnb_balance", _App_RewardAllUserBnbBalance0_HTTP_Handler(srv))
 }
 
 func _App_EthAuthorize0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
@@ -388,6 +391,25 @@ func _App_SetAllUserBnbBalance0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Co
 	}
 }
 
+func _App_RewardAllUserBnbBalance0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RewardAllUserBnbBalanceRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAppRewardAllUserBnbBalance)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RewardAllUserBnbBalance(ctx, req.(*RewardAllUserBnbBalanceRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*RewardAllUserBnbBalanceReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AppHTTPClient interface {
 	AdminFee(ctx context.Context, req *AdminFeeRequest, opts ...http.CallOption) (rsp *AdminFeeReply, err error)
 	AdminWithdraw(ctx context.Context, req *AdminWithdrawRequest, opts ...http.CallOption) (rsp *AdminWithdrawReply, err error)
@@ -398,6 +420,7 @@ type AppHTTPClient interface {
 	RecommendList(ctx context.Context, req *RecommendListRequest, opts ...http.CallOption) (rsp *RecommendListReply, err error)
 	RecommendRewardList(ctx context.Context, req *RecommendRewardListRequest, opts ...http.CallOption) (rsp *RecommendRewardListReply, err error)
 	RecommendUpdate(ctx context.Context, req *RecommendUpdateRequest, opts ...http.CallOption) (rsp *RecommendUpdateReply, err error)
+	RewardAllUserBnbBalance(ctx context.Context, req *RewardAllUserBnbBalanceRequest, opts ...http.CallOption) (rsp *RewardAllUserBnbBalanceReply, err error)
 	RewardList(ctx context.Context, req *RewardListRequest, opts ...http.CallOption) (rsp *RewardListReply, err error)
 	SetAllUserBnbBalance(ctx context.Context, req *SetAllUserBnbBalanceRequest, opts ...http.CallOption) (rsp *SetAllUserBnbBalanceReply, err error)
 	UpdateUserBnbBalance(ctx context.Context, req *UpdateUserBnbBalanceRequest, opts ...http.CallOption) (rsp *UpdateUserBnbBalanceReply, err error)
@@ -526,6 +549,19 @@ func (c *AppHTTPClientImpl) RecommendUpdate(ctx context.Context, in *RecommendUp
 	opts = append(opts, http.Operation(OperationAppRecommendUpdate))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in.SendBody, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AppHTTPClientImpl) RewardAllUserBnbBalance(ctx context.Context, in *RewardAllUserBnbBalanceRequest, opts ...http.CallOption) (*RewardAllUserBnbBalanceReply, error) {
+	var out RewardAllUserBnbBalanceReply
+	pattern := "/api/admin_dhb/reward_all_user_bnb_balance"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAppRewardAllUserBnbBalance))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

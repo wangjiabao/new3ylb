@@ -164,6 +164,7 @@ type UserBalanceRepo interface {
 	GetWithdrawNotDeal(ctx context.Context) ([]*Withdraw, error)
 	GetUserBalanceRecordUserUsdtTotal(ctx context.Context, userId int64) (int64, error)
 	GetUserBalanceRecordUsdtTotal(ctx context.Context) (int64, error)
+	GetUserBnbBalanceByUserIds(ctx context.Context, userIds []int64) (int64, error)
 	GetUserBalanceRecordUsdtTotalToday(ctx context.Context) (int64, error)
 	GetUserWithdrawUsdtTotalToday(ctx context.Context) (int64, error)
 	GetUserWithdrawUsdtTotal(ctx context.Context) (int64, error)
@@ -1630,7 +1631,45 @@ func (uuc *UserUseCase) SelectUsers(ctx context.Context) ([]*User, error) {
 	return users, nil
 }
 
+func (uuc *UserUseCase) GetUserRecommend(ctx context.Context, userId int64) (*UserRecommend, error) {
+	var (
+		user *UserRecommend
+		err  error
+	)
+
+	user, err = uuc.urRepo.GetUserRecommendByUserId(ctx, userId)
+	if nil != err {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (uuc *UserUseCase) GetUserLow(ctx context.Context, code string) ([]*UserRecommend, error) {
+	var (
+		users []*UserRecommend
+		err   error
+	)
+
+	users = make([]*UserRecommend, 0)
+
+	users, err = uuc.urRepo.GetUserRecommendLikeCode(ctx, code)
+	if nil != err {
+		return users, err
+	}
+
+	return users, nil
+}
+
+func (uuc *UserUseCase) GetUserBnbBalance(ctx context.Context, userIds []int64) (int64, error) {
+	return uuc.ubRepo.GetUserBnbBalanceByUserIds(ctx, userIds)
+}
+
 func (uuc *UserUseCase) UpdateUserBnbBalance(ctx context.Context, userId int64, amount float64) (*BnbBalance, error) {
+	return uuc.ubRepo.UpdateUserBnbBalance(ctx, userId, amount)
+}
+
+func (uuc *UserUseCase) SelectUserBnbBalance(ctx context.Context, userId int64, amount float64) (*BnbBalance, error) {
 	return uuc.ubRepo.UpdateUserBnbBalance(ctx, userId, amount)
 }
 

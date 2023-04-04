@@ -42,6 +42,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/admin_dhb/reward_all_user_bnb_balance:
+        get:
+            tags:
+                - App
+            operationId: App_RewardAllUserBnbBalance
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RewardAllUserBnbBalanceReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/admin_dhb/set_all_user_bnb_balance:
         get:
             tags:
@@ -447,6 +465,9 @@ components:
             properties:
                 code:
                     type: string
+        RewardAllUserBnbBalanceReply:
+            type: object
+            properties: {}
         RewardListReply:
             type: object
             properties:

@@ -133,6 +133,12 @@ service App {
 			get: "/api/admin_dhb/set_all_user_bnb_balance"
 		};
 	};
+
+	rpc RewardAllUserBnbBalance (RewardAllUserBnbBalanceRequest) returns (RewardAllUserBnbBalanceReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/reward_all_user_bnb_balance"
+		};
+	};
 //
 //	rpc AdminAll (AdminAllRequest) returns (AdminAllReply) {
 //		option (google.api.http) = {
@@ -512,4 +518,10 @@ message SetAllUserBnbBalanceRequest {
 }
 
 message SetAllUserBnbBalanceReply {
+}
+
+message RewardAllUserBnbBalanceRequest {
+}
+
+message RewardAllUserBnbBalanceReply {
 }

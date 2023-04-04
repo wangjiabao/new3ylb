@@ -1941,6 +1941,22 @@ func (ub UserBalanceRepo) GetUserBalanceRecordUsdtTotal(ctx context.Context) (in
 	return total.Total, nil
 }
 
+// GetUserBnbBalanceByUserIds .
+func (ub UserBalanceRepo) GetUserBnbBalanceByUserIds(ctx context.Context, userIds []int64) (int64, error) {
+	var total UserBalanceTotal
+	if err := ub.data.db.Table("bnb_balance").
+		Where("user_id in(?)", userIds).
+		Select("sum(amount) as total").Take(&total).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return total.Total, errors.NotFound("BNB_BALANCE_RECORD_NOT_FOUND", "bnb balance not found")
+		}
+
+		return total.Total, errors.New(500, "BNB BALANCE RECORD ERROR", err.Error())
+	}
+
+	return total.Total, nil
+}
+
 // GetUserBalanceRecordUserUsdtTotal .
 func (ub UserBalanceRepo) GetUserBalanceRecordUserUsdtTotal(ctx context.Context, userId int64) (int64, error) {
 	var total UserBalanceTotal
