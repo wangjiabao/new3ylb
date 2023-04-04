@@ -502,7 +502,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			tmpUserRecommendLowUserIds = append(tmpUserRecommendLowUserIds, vTmpUserRecommendLow.UserId)
 		}
 
-		if 0 <= len(tmpUserRecommendLowUserIds) {
+		if 0 >= len(tmpUserRecommendLowUserIds) {
 			continue
 		}
 
