@@ -566,11 +566,11 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 		tmpSuccessNum++
 	}
 	if tmpErrNum > 0 {
-		fmt.Println(tmpErrNum, num, num%5)
+		fmt.Println(1, tmpErrNum, num, num%5)
 	}
 
 	if tmpSuccessNum > 0 {
-		fmt.Println(tmpSuccessNum, num, num%5)
+		fmt.Println(2, tmpSuccessNum, num, num%5)
 	}
 
 	return &v1.UpdateUserBnbBalanceReply{}, nil
