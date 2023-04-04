@@ -2363,6 +2363,8 @@ func (m *WithdrawReply) validate(all bool) error {
 
 	// no validation rules for Status
 
+	// no validation rules for Msg
+
 	if len(errors) > 0 {
 		return WithdrawReplyMultiError(errors)
 	}

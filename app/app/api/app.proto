@@ -313,6 +313,7 @@ message WithdrawRequest {
 
 message WithdrawReply {
 	string status = 1;
+	string msg = 2;
 }
 
 message AdminRewardListRequest {

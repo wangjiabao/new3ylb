@@ -954,12 +954,14 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 	if "dhb" == req.SendBody.Type && userBalance.BalanceDhb < amount {
 		return &v1.WithdrawReply{
 			Status: "fail",
+			Msg:    "余额不足",
 		}, nil
 	}
 
 	if "usdt" == req.SendBody.Type && userBalance.BalanceUsdt < amount {
 		return &v1.WithdrawReply{
 			Status: "fail",
+			Msg:    "余额不足",
 		}, nil
 	}
 	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务

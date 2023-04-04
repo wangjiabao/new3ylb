@@ -568,6 +568,8 @@ components:
             properties:
                 status:
                     type: string
+                msg:
+                    type: string
         WithdrawRequest_SendBody:
             type: object
             properties:
