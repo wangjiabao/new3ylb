@@ -603,6 +603,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		var tmpBuyAmount float64
 		var tmpSellAmount float64
 		if 1 == k {
+			fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount * 100 / 10 / float64(len(vUserReward))
 			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
 		} else if 2 == k {
@@ -628,7 +629,13 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 
 		for userId, vUserRewardMap := range userRewardMap {
-			fmt.Println(userId, vUserRewardMap)
+			if userId == 2 {
+
+				fmt.Println(userId, vUserRewardMap)
+			} else if userId == 1 {
+
+				fmt.Println(userId, vUserRewardMap)
+			}
 		}
 	}
 
