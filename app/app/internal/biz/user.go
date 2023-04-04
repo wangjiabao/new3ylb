@@ -130,6 +130,7 @@ type ConfigRepo interface {
 type UserBalanceRepo interface {
 	CreateUserBalance(ctx context.Context, u *User) (*UserBalance, error)
 	CreateUserBnbBalance(ctx context.Context, u *User) (*BnbBalance, error)
+	UpdateUserBnbBalance(ctx context.Context, userId int64, amount float64) (*BnbBalance, error)
 	GetUserBnbBalanceByUserId(ctx context.Context, userId int64) (*BnbBalance, error)
 	LocationReward(ctx context.Context, userId int64, amount int64, locationId int64, myLocationId int64, locationType string) (int64, error)
 	WithdrawReward(ctx context.Context, userId int64, amount int64, locationId int64, myLocationId int64, locationType string) (int64, error)
@@ -1627,6 +1628,10 @@ func (uuc *UserUseCase) SelectUsers(ctx context.Context) ([]*User, error) {
 	}
 
 	return users, nil
+}
+
+func (uuc *UserUseCase) UpdateUserBnbBalance(ctx context.Context, userId int64, amount float64) (*BnbBalance, error) {
+	return uuc.ubRepo.UpdateUserBnbBalance(ctx, userId, amount)
 }
 
 func (uuc *UserUseCase) UploadRecommendUser(ctx context.Context, req *v1.UploadRecommendUserRequest) ([]string, []string, error) {

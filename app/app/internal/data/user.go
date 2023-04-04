@@ -799,6 +799,23 @@ func (ub UserBalanceRepo) CreateUserBnbBalance(ctx context.Context, u *biz.User)
 	}, nil
 }
 
+// UpdateUserBnbBalance .
+func (ub *UserBalanceRepo) UpdateUserBnbBalance(ctx context.Context, userId int64, amount float64) (*biz.BnbBalance, error) {
+	var bnbBalance BnbBalance
+	bnbBalance.Amount = amount
+	bnbBalance.UpdatedAt = time.Now()
+	res := ub.data.DB(ctx).Table("bnb_balance").Where("user_id=?", userId).Updates(&bnbBalance)
+	if res.Error != nil {
+		return nil, errors.New(500, "UPDATE_BNB_BALANCE_ERROR", "记录修改失败")
+	}
+
+	return &biz.BnbBalance{
+		ID:     bnbBalance.ID,
+		UserId: bnbBalance.UserId,
+		Amount: bnbBalance.Amount,
+	}, nil
+}
+
 func (ub *UserBalanceRepo) GetUserBnbBalanceByUserId(ctx context.Context, userId int64) (*biz.BnbBalance, error) {
 	var bnbBalance BnbBalance
 	if err := ub.data.db.Where("user_id=?", userId).Table("bnb_balance").First(&bnbBalance).Error; err != nil {
