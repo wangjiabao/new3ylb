@@ -1677,16 +1677,16 @@ func (uuc *UserUseCase) UpdateUserBnbBalance(ctx context.Context, userId int64, 
 	return uuc.ubRepo.UpdateUserBnbBalance(ctx, userId, amount)
 }
 
-func (uuc *UserUseCase) AddUserBnbAmount(ctx context.Context, userRewardMap map[int64]float64, rate float64) error {
+func (uuc *UserUseCase) AddUserBnbAmount(ctx context.Context, userRewardMap map[int64]float64, rate float64, usersMap map[int64]string) error {
 	//var err error
 	fmt.Println(rate)
 	//if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
 
 	for userId, vUserRewardMap := range userRewardMap {
 		if userId == 2 {
-			fmt.Println(userId, vUserRewardMap, vUserRewardMap*rate)
+			fmt.Println(userId, vUserRewardMap, vUserRewardMap*rate, usersMap[userId])
 		} else if userId == 1 {
-			fmt.Println(userId, vUserRewardMap, vUserRewardMap*rate)
+			fmt.Println(userId, vUserRewardMap, vUserRewardMap*rate, usersMap[userId])
 		}
 
 		// 新增

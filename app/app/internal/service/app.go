@@ -529,6 +529,11 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		return nil, err
 	}
 
+	usersMap := make(map[int64]string, 0)
+	for _, vUsers := range users {
+		usersMap[vUsers.ID] = vUsers.Address
+	}
+
 	userReward := make(map[int64][]int64, 0)
 
 	for _, vUsers := range users {
@@ -632,6 +637,9 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			if _, ok := userRewardMap[vVUserReward]; !ok {
 				userRewardMap[vVUserReward] = float64(0)
 			}
+			if vVUserReward == 2 {
+				fmt.Println(vVUserReward, tmpSellAmount, tmpBuyAmount)
+			}
 			userRewardMap[vVUserReward] += tmpSellAmount
 			userRewardMap[vVUserReward] += tmpBuyAmount
 		}
@@ -652,7 +660,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 	}
 
 	// todo transfer掉余额
-	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, rate/10000000000)
+	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, rate/10000000000, usersMap)
 	if nil != err {
 		return nil, err
 	}
