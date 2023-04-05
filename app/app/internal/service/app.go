@@ -543,6 +543,9 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 
 	fmt.Println(buyRewardAmount, sellRewardAmount)
 
+	buyRewardAmount = 100
+	buyRewardAmount = 100
+
 	users, err = a.uuc.SelectUsers(ctx)
 	if nil != err {
 		return nil, err
