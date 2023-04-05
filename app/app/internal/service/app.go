@@ -656,12 +656,12 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
 		}
 
-		tmpBuyAmount, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBuyAmount), 64)
+		tmpBuyAmount, err = strconv.ParseFloat(fmt.Sprintf("%.7f", tmpBuyAmount), 64)
 		if nil != err {
 			return nil, err
 		}
 
-		tmpSellAmount, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpSellAmount), 64)
+		tmpSellAmount, err = strconv.ParseFloat(fmt.Sprintf("%.7f", tmpSellAmount), 64)
 		if nil != err {
 			return nil, err
 		}
@@ -678,26 +678,26 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 	}
 
-	var (
-		price string
-		rate  float64
-	)
-	price, err = GetAmountOut("10000000000")
-	if nil != err {
-		return nil, err
-	}
-
-	rate, err = strconv.ParseFloat(price, 64)
-	if nil != err {
-		return nil, err
-	}
+	//var (
+	//	price string
+	//	rate  float64
+	//)
+	//price, err = GetAmountOut("10000000000")
+	//if nil != err {
+	//	return nil, err
+	//}
+	//
+	//rate, err = strconv.ParseFloat(price, 64)
+	//if nil != err {
+	//	return nil, err
+	//}
 
 	//rateFloat, _ := strconv.ParseFloat(fmt.Sprintf("%.7f", rate/10000000000), 64)
 	//if rateFloat <= 0 {
 	//	return nil, errors.New(500, "ERROR_TOKEN", "分红比率错误")
 	//}
 
-	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, rate, usersMap)
+	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, usersMap)
 	if nil != err {
 		return nil, err
 	}
