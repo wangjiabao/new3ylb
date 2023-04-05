@@ -592,6 +592,10 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		if nil != err {
 			return nil, err
 		}
+		tmpBalanceAll, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBalanceAll), 64)
+		if nil != err {
+			return nil, err
+		}
 
 		if tmpBalanceAll > 1000 {
 			if _, ok := userReward[1]; !ok {
@@ -655,6 +659,16 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
 		}
 
+		tmpBuyAmount, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBuyAmount), 64)
+		if nil != err {
+			return nil, err
+		}
+
+		tmpSellAmount, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpSellAmount), 64)
+		if nil != err {
+			return nil, err
+		}
+
 		for _, vVUserReward := range vUserReward {
 			if _, ok := userRewardMap[vVUserReward]; !ok {
 				userRewardMap[vVUserReward] = float64(0)
@@ -681,7 +695,12 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		return nil, err
 	}
 
-	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, rate/10000000000, usersMap)
+	rateFloat, _ := strconv.ParseFloat(fmt.Sprintf("%.10f", rate/10000000000), 64)
+	if rateFloat <= 0 {
+		return nil, errors.New(500, "ERROR_TOKEN", "分红比率错误")
+	}
+
+	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, rateFloat, usersMap)
 	if nil != err {
 		return nil, err
 	}
