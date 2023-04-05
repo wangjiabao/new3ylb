@@ -549,7 +549,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 
 		for _, vTmpUserRecommendLow := range tmpUserRecommendLow {
-			if vTmpUserRecommendLow.RecommendCode == tmpUserRecommend.RecommendCode+"D"+strconv.FormatInt(vUsers.ID, 64) {
+			if vTmpUserRecommendLow.RecommendCode == tmpUserRecommend.RecommendCode+"D"+strconv.FormatInt(vUsers.ID, 10) {
 				continue
 			}
 
