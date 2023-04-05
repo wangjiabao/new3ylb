@@ -476,50 +476,69 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		err              error
 		buyRewardAmount  float64
 		sellRewardAmount float64
+		configs          []*biz.Config
 	)
 
-	end := time.Now().Add(3 * time.Minute)
-	for {
-		if time.Now().After(end) {
-			return nil, errors.New(500, "reward time error", "分红时间超时")
-		}
+	//end := time.Now().Add(3 * time.Minute)
+	//for {
+	//	if time.Now().After(end) {
+	//		return nil, errors.New(500, "reward time error", "分红时间超时")
+	//	}
+	//
+	//	tmpBal := ""
+	//	tmpBal, err = balanceAtEth("0x1aDC73f617C7E326BBCe87E99AD35c03f6009861")
+	//	if nil != err {
+	//		fmt.Println("reward request eth err")
+	//		time.Sleep(10 * time.Second)
+	//		continue
+	//	}
+	//	lenBalance := len(tmpBal)
+	//	if lenBalance > 8 {
+	//		if buyRewardAmount, err = strconv.ParseFloat(tmpBal[:lenBalance-8], 64); err != nil {
+	//			return nil, errors.New(500, "reward time error", "分红计算错误")
+	//		}
+	//
+	//		buyRewardAmount /= 10000000000
+	//	} else {
+	//		buyRewardAmount = 0
+	//	}
+	//
+	//	tmpBal, err = balanceAtEth("0xDf66818ca9FE3a9776B9360a1E6fBCF4e9D82d82")
+	//	if nil != err {
+	//		fmt.Println("reward request eth err")
+	//		time.Sleep(10 * time.Second)
+	//		continue
+	//	}
+	//	lenBalance = len(tmpBal)
+	//	if lenBalance > 8 {
+	//		if sellRewardAmount, err = strconv.ParseFloat(tmpBal[:lenBalance-8], 64); err != nil {
+	//			return nil, errors.New(500, "reward math error", "分红计算错误")
+	//		}
+	//
+	//		sellRewardAmount /= 10000000000
+	//	} else {
+	//		sellRewardAmount = 0
+	//	}
+	//
+	//	break
+	//}
 
-		tmpBal := ""
-		tmpBal, err = balanceAtEth("0x1aDC73f617C7E326BBCe87E99AD35c03f6009861")
-		if nil != err {
-			fmt.Println("reward request eth err")
-			time.Sleep(10 * time.Second)
-			continue
-		}
-		lenBalance := len(tmpBal)
-		if lenBalance > 8 {
-			if buyRewardAmount, err = strconv.ParseFloat(tmpBal[:lenBalance-8], 64); err != nil {
-				return nil, errors.New(500, "reward time error", "分红计算错误")
+	// 配置
+	configs, err = a.uuc.GetDhbConfig(ctx)
+	if nil != configs {
+		for _, vConfig := range configs {
+			if "reward_buy_amount" == vConfig.KeyName {
+				buyRewardAmount, _ = strconv.ParseFloat(vConfig.Value, 64)
+				buyRewardAmount /= 100
+			} else if "reward_sell_amount" == vConfig.KeyName {
+				sellRewardAmount, _ = strconv.ParseFloat(vConfig.Value, 64)
+				sellRewardAmount /= 100
 			}
-
-			buyRewardAmount /= 10000000000
-		} else {
-			buyRewardAmount = 0
 		}
+	}
 
-		tmpBal, err = balanceAtEth("0xDf66818ca9FE3a9776B9360a1E6fBCF4e9D82d82")
-		if nil != err {
-			fmt.Println("reward request eth err")
-			time.Sleep(10 * time.Second)
-			continue
-		}
-		lenBalance = len(tmpBal)
-		if lenBalance > 8 {
-			if sellRewardAmount, err = strconv.ParseFloat(tmpBal[:lenBalance-8], 64); err != nil {
-				return nil, errors.New(500, "reward math error", "分红计算错误")
-			}
-
-			sellRewardAmount /= 10000000000
-		} else {
-			sellRewardAmount = 0
-		}
-
-		break
+	if buyRewardAmount < 0 || sellRewardAmount < 0 {
+		return nil, errors.New(500, "ERROR_TOKEN", "分红金额错误")
 	}
 
 	fmt.Println(buyRewardAmount, sellRewardAmount)
@@ -659,7 +678,6 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		return nil, err
 	}
 
-	// todo transfer掉余额
 	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, rate/10000000000, usersMap)
 	if nil != err {
 		return nil, err
