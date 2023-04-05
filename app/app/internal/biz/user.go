@@ -1703,9 +1703,7 @@ func (uuc *UserUseCase) AddUserBnbAmount(ctx context.Context, userRewardMap map[
 
 	for userId, vUserRewardMap := range userRewardMap {
 
-		if userId == 2 {
-			fmt.Println(vUserRewardMap, vUserRewardMap*rate, usersMap[userId])
-		}
+		fmt.Println(vUserRewardMap, vUserRewardMap*rate, usersMap[userId])
 
 		// 新增
 		//err = uuc.ubRepo.AddBnbAmount(ctx, userId, vUserRewardMap*rate)
