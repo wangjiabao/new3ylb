@@ -938,6 +938,8 @@ func (m *UserInfoReply) validate(all bool) error {
 
 	// no validation rules for AreaTotalTodayAmount
 
+	// no validation rules for BnbAmount
+
 	if len(errors) > 0 {
 		return UserInfoReplyMultiError(errors)
 	}

@@ -78,6 +78,7 @@ type UserBalance struct {
 	UserId      int64     `gorm:"type:int"`
 	BalanceUsdt int64     `gorm:"type:bigint"`
 	BalanceDhb  int64     `gorm:"type:bigint"`
+	BnbAmount   float64   `gorm:"type:decimal(65,20);not null"`
 	CreatedAt   time.Time `gorm:"type:datetime;not null"`
 	UpdatedAt   time.Time `gorm:"type:datetime;not null"`
 }
@@ -856,6 +857,7 @@ func (ub UserBalanceRepo) GetUserBalance(ctx context.Context, userId int64) (*bi
 		UserId:      userBalance.UserId,
 		BalanceUsdt: userBalance.BalanceUsdt,
 		BalanceDhb:  userBalance.BalanceDhb,
+		BnbAmount:   userBalance.BnbAmount,
 	}, nil
 }
 
@@ -1153,6 +1155,35 @@ func (ub *UserBalanceRepo) WithdrawDhb(ctx context.Context, userId int64, amount
 	userBalanceRecode.Type = "withdraw"
 	userBalanceRecode.CoinType = "dhb"
 	userBalanceRecode.Amount = amount
+	err = ub.data.DB(ctx).Table("user_balance_record").Create(&userBalanceRecode).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// WithdrawBnb .
+func (ub *UserBalanceRepo) WithdrawBnb(ctx context.Context, userId int64, amount float64, amountInt int64) error {
+	var err error
+	if res := ub.data.DB(ctx).Table("user_balance").
+		Where("user_id=? and bnb_amount>=?", userId, amount).
+		Updates(map[string]interface{}{"bnb_amount": gorm.Expr("bnb_amount - ?", amount)}); 0 == res.RowsAffected || nil != res.Error {
+		return errors.NotFound("user balance err", "user balance error")
+	}
+
+	var userBalance UserBalance
+	err = ub.data.DB(ctx).Where(&UserBalance{UserId: userId}).Table("user_balance").First(&userBalance).Error
+	if err != nil {
+		return err
+	}
+
+	var userBalanceRecode UserBalanceRecord
+	userBalanceRecode.Balance = userBalance.BalanceDhb
+	userBalanceRecode.UserId = userBalance.UserId
+	userBalanceRecode.Type = "withdraw"
+	userBalanceRecode.CoinType = "bnb"
+	userBalanceRecode.Amount = amountInt
 	err = ub.data.DB(ctx).Table("user_balance_record").Create(&userBalanceRecode).Error
 	if err != nil {
 		return err

@@ -254,6 +254,7 @@ message UserInfoReply {
 	int64 undo = 45;
 	string areaName = 46;
 	string areaTotalTodayAmount = 47;
+	string BnbAmount = 48;
 }
 
 message RewardListRequest {

@@ -67,6 +67,7 @@ type UserBalance struct {
 	UserId      int64
 	BalanceUsdt int64
 	BalanceDhb  int64
+	BnbAmount   float64
 }
 
 type BnbBalance struct {
@@ -164,6 +165,7 @@ type UserBalanceRepo interface {
 	GreateWithdraw(ctx context.Context, userId int64, amount int64, coinType string) (*Withdraw, error)
 	WithdrawUsdt(ctx context.Context, userId int64, amount int64) error
 	WithdrawDhb(ctx context.Context, userId int64, amount int64) error
+	WithdrawBnb(ctx context.Context, userId int64, amount float64, amountInt int64) error
 	GetWithdrawByUserId(ctx context.Context, userId int64) ([]*Withdraw, error)
 	GetWithdraws(ctx context.Context, b *Pagination, userId int64) ([]*Withdraw, error, int64)
 	GetWithdrawPassOrRewarded(ctx context.Context) ([]*Withdraw, error)
@@ -781,6 +783,7 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		FeeDaily:             fmt.Sprintf("%.2f", float64(feeDaily)/float64(10000000000)),
 		BalanceUsdt:          fmt.Sprintf("%.2f", float64(userBalance.BalanceUsdt)/float64(10000000000)),
 		BalanceDhb:           fmt.Sprintf("%.2f", float64(userBalance.BalanceDhb)/float64(10000000000)),
+		BnbAmount:            fmt.Sprintf("%.2f", userBalance.BnbAmount),
 		InviteUrl:            encodeString,
 		InviteUserAddress:    inviteUserAddress,
 		RecommendNum:         userInfo.HistoryRecommend,
@@ -955,7 +958,7 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 		userBalance *UserBalance
 	)
 
-	if "dhb" != req.SendBody.Type && "usdt" != req.SendBody.Type {
+	if "dhb" != req.SendBody.Type && "usdt" != req.SendBody.Type || "bnb" != req.SendBody.Type {
 		return &v1.WithdrawReply{
 			Status: "fail",
 		}, nil
@@ -972,6 +975,13 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 	if 0 >= amount {
 		return &v1.WithdrawReply{
 			Status: "fail",
+		}, nil
+	}
+
+	if "bnb" == req.SendBody.Type && userBalance.BnbAmount < amountFloat {
+		return &v1.WithdrawReply{
+			Status: "fail",
+			Msg:    "余额不足",
 		}, nil
 	}
 
@@ -1002,6 +1012,15 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 
 		} else if "dhb" == req.SendBody.Type {
 			err = uuc.ubRepo.WithdrawDhb(ctx, user.ID, amount) // 提现
+			if nil != err {
+				return err
+			}
+			_, err = uuc.ubRepo.GreateWithdraw(ctx, user.ID, amount, req.SendBody.Type)
+			if nil != err {
+				return err
+			}
+		} else if "bnb" == req.SendBody.Type {
+			err = uuc.ubRepo.WithdrawBnb(ctx, user.ID, amountFloat, amount) // 提现
 			if nil != err {
 				return err
 			}
