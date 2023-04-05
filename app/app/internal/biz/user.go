@@ -177,6 +177,7 @@ type UserBalanceRepo interface {
 	GetUserBalanceRecordUserUsdtTotal(ctx context.Context, userId int64) (int64, error)
 	GetUserBalanceRecordUsdtTotal(ctx context.Context) (int64, error)
 	GetUserBnbBalanceByUserIds(ctx context.Context, userIds []int64) (float64, error)
+	GetBnbBalance(ctx context.Context, userId int64) (*BnbBalance, error)
 	GetUserBalanceRecordUsdtTotalToday(ctx context.Context) (int64, error)
 	GetUserWithdrawUsdtTotalToday(ctx context.Context) (int64, error)
 	GetUserWithdrawUsdtTotal(ctx context.Context) (int64, error)
@@ -458,10 +459,11 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		recommendAreaFourName    string
 		areaName                 string
 		bnbReward                []*BnbReward
+		myBnbBalance             *BnbBalance
 		bnbRewardAmount          float64
 		todayBnbReward           float64
 		//bnbBalance               float64
-		//teamBnbBalance           float64
+		teamBnbBalance       float64
 		areaTotalTodayAmount int64
 		err                  error
 	)
@@ -563,6 +565,11 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		myCode = userRecommend.RecommendCode + myCode
 	}
 
+	myBnbBalance, err = uuc.ubRepo.GetBnbBalance(ctx, myUser.ID)
+	if nil != err {
+		return nil, err
+	}
+
 	// 团队
 	userRecommends, err = uuc.urRepo.GetUserRecommendLikeCode(ctx, myCode)
 	if nil != userRecommends {
@@ -580,15 +587,10 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 
 		}
 
-		//tmpUserIds = append(tmpUserIds, vUsers.ID)
-		//tmpBalanceAll, err = a.uuc.GetUserBnbBalance(ctx, tmpUserRecommendLowUserIds)
-		//if nil != err {
-		//	return nil, err
-		//}
-		//tmpBalanceAll, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBalanceAll), 64)
-		//if nil != err {
-		//	return nil, err
-		//}
+		teamBnbBalance, err = uuc.ubRepo.GetUserBnbBalanceByUserIds(ctx, tmpUserIds)
+		if nil != err {
+			return nil, err
+		}
 
 		if 0 < len(tmpUserIds) {
 			tmpUsersLocations, err = uuc.locationRepo.GetLocationsByUserIdsGroupByUserId(ctx, tmpUserIds)
@@ -829,6 +831,8 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		BnbReward:            fmt.Sprintf("%.5f", bnbRewardAmount),
 		TodayBnbReward:       fmt.Sprintf("%.5f", todayBnbReward),
 		BnbAmount:            fmt.Sprintf("%.5f", userBalance.BnbAmount),
+		TeamBnbBalance:       fmt.Sprintf("%.2f", teamBnbBalance),
+		BnbBalance:           fmt.Sprintf("%.2f", myBnbBalance.Amount),
 		InviteUrl:            encodeString,
 		InviteUserAddress:    inviteUserAddress,
 		RecommendNum:         userInfo.HistoryRecommend,

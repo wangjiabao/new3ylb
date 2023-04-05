@@ -1910,6 +1910,25 @@ func (ur *UserRecommendRepo) GetUserArea(ctx context.Context, userId int64) (*bi
 	}, nil
 }
 
+// GetBnbBalance .
+func (ur *UserBalanceRepo) GetBnbBalance(ctx context.Context, userId int64) (*biz.BnbBalance, error) {
+
+	var bnbBalance *BnbBalance
+	if err := ur.data.db.Where("user_id=?", userId).Table("bnb_balance").First(&bnbBalance).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New(500, "USER AREA NOT FOUND", err.Error())
+		}
+
+		return nil, errors.New(500, "USER AREA ERROR", err.Error())
+	}
+
+	return &biz.BnbBalance{
+		ID:     bnbBalance.ID,
+		UserId: bnbBalance.UserId,
+		Amount: bnbBalance.Amount,
+	}, nil
+}
+
 // GetUserRewardsLastMonthFee .
 func (ub *UserBalanceRepo) GetUserRewardsLastMonthFee(ctx context.Context) ([]*biz.Reward, error) {
 	var (
