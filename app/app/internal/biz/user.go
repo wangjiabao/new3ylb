@@ -572,8 +572,23 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 			tmpUsersLocations2 []*Location
 		)
 		for _, vUserRecommends := range userRecommends {
+			if vUserRecommends.RecommendCode == myCode {
+				continue
+			}
+
 			tmpUserIds = append(tmpUserIds, vUserRecommends.UserId)
+
 		}
+
+		//tmpUserIds = append(tmpUserIds, vUsers.ID)
+		//tmpBalanceAll, err = a.uuc.GetUserBnbBalance(ctx, tmpUserRecommendLowUserIds)
+		//if nil != err {
+		//	return nil, err
+		//}
+		//tmpBalanceAll, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBalanceAll), 64)
+		//if nil != err {
+		//	return nil, err
+		//}
 
 		if 0 < len(tmpUserIds) {
 			tmpUsersLocations, err = uuc.locationRepo.GetLocationsByUserIdsGroupByUserId(ctx, tmpUserIds)
@@ -991,6 +1006,7 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 	if "dhb" != req.SendBody.Type && "usdt" != req.SendBody.Type || "bnb" != req.SendBody.Type {
 		return &v1.WithdrawReply{
 			Status: "fail",
+			Msg:    "类型错误",
 		}, nil
 	}
 
@@ -1006,6 +1022,7 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 	if 0 >= amount {
 		return &v1.WithdrawReply{
 			Status: "fail",
+			Msg:    "数值错误",
 		}, nil
 	}
 
