@@ -47,7 +47,7 @@ func NewAppService(uuc *biz.UserUseCase, ruc *biz.RecordUseCase, logger log.Logg
 func (a *AppService) EthAuthorize(ctx context.Context, req *v1.EthAuthorizeRequest) (*v1.EthAuthorizeReply, error) {
 	// TODO 有效的参数验证
 	userAddress := req.SendBody.Address // 以太坊账户
-	if "" == userAddress || 20 > len(userAddress) {
+	if "" == userAddress || 20 > len(userAddress) || "0x000000000000000000000000000000000000dead" == userAddress {
 		return nil, errors.New(500, "AUTHORIZE_ERROR", "账户地址参数错误")
 	}
 

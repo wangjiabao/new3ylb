@@ -461,7 +461,6 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		areaName                    string
 		bnbReward                   []*BnbReward
 		myBnbBalance                *BnbBalance
-		teamUserBnbBalance          []*BnbBalance
 		teamUserBnbBalanceAmount    float64
 		teamUserBnbBalanceAmountInt int64
 		bnbRewardAmount             float64
@@ -593,23 +592,6 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		teamBnbBalance, err = uuc.ubRepo.GetUserBnbBalanceByUserIds(ctx, tmpUserIds)
 		if nil != err {
 			return nil, err
-		}
-
-		if myUser.ID == 70 {
-			teamUserBnbBalance, err = uuc.ubRepo.GetUserBnbBalanceDataByUserIds(ctx, tmpUserIds)
-			if nil != err {
-				return nil, err
-			}
-
-			for _, vTeamUserBnbBalance := range teamUserBnbBalance {
-				var tmpF1 int64
-				tmpF1, err = strconv.ParseInt(fmt.Sprintf("%.0f", vTeamUserBnbBalance.Amount), 10, 64)
-				if nil != err {
-					return nil, err
-				}
-
-				teamUserBnbBalanceAmountInt += tmpF1
-			}
 		}
 
 		if 0 < len(tmpUserIds) {
