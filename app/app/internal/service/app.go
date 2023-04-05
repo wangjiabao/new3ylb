@@ -607,15 +607,19 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			tmpBuyAmount = buyRewardAmount * 100 / 10 / float64(len(vUserReward))
 			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
 		} else if 2 == k {
+			fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount * 100 / 15 / float64(len(vUserReward))
 			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
 		} else if 3 == k {
+			fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
 			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
 		} else if 4 == k {
+			fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount * 100 / 25 / float64(len(vUserReward))
 			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
 		} else if 5 == k {
+			fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount * 100 / 30 / float64(len(vUserReward))
 			tmpSellAmount = buyRewardAmount * 100 / 20 / float64(len(vUserReward))
 		}
@@ -627,14 +631,26 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			userRewardMap[vVUserReward] += tmpSellAmount
 			userRewardMap[vVUserReward] += tmpBuyAmount
 		}
+	}
 
-		for userId, vUserRewardMap := range userRewardMap {
-			if userId == 2 {
-				fmt.Println(userId, vUserRewardMap)
-			} else if userId == 1 {
-				fmt.Println(userId, vUserRewardMap)
-			}
-		}
+	var (
+		price string
+		rate  float64
+	)
+	price, err = GetAmountOut("10000000000")
+	if nil != err {
+		return nil, err
+	}
+
+	rate, err = strconv.ParseFloat(price, 64)
+	if nil != err {
+		return nil, err
+	}
+
+	// todo transfer掉余额
+	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, rate/10000000000)
+	if nil != err {
+		return nil, err
 	}
 
 	return &v1.RewardAllUserBnbBalanceReply{}, nil
@@ -796,8 +812,6 @@ func balanceAtEth(address string) (string, error) {
 		return "", err
 	}
 
-	//tokenAddress := common.HexToAddress("0x337610d27c682E347C9cD60BD4b3b107C9d34dDd")
-	//instance, err := NewToken(tokenAddress, client)
 	tokenAddress := common.HexToAddress("0x0f97F5da8C4715D017F597314DCCd00E0D605Ed8")
 	instance, err := NewBnb4(tokenAddress, client)
 	if err != nil {
@@ -810,4 +824,33 @@ func balanceAtEth(address string) (string, error) {
 	}
 
 	return bal.String(), nil
+}
+
+func GetAmountOut(strAmount string) (string, error) {
+	var (
+		err error
+	)
+	client, err := ethclient.Dial("https://bsc-dataseed.binance.org/")
+	if err != nil {
+		return "", err
+	}
+
+	tokenAddress := common.HexToAddress("0x10ED43C718714eb63d5aA57B78B54704E256024E")
+	instance, err := NewPancakerouterv2(tokenAddress, client)
+	if err != nil {
+		return "", err
+	}
+
+	addresses := make([]common.Address, 0)
+	addresses = append(addresses, common.HexToAddress("0x0f97F5da8C4715D017F597314DCCd00E0D605Ed8"), common.HexToAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"))
+	amount, _ := new(big.Int).SetString(strAmount, 10)
+
+	bals, err := instance.GetAmountsOut(&bind.CallOpts{}, amount, addresses)
+	if err != nil {
+		return "", err
+	}
+
+	fmt.Println(bals)
+
+	return bals[1].String(), nil
 }

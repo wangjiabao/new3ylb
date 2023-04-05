@@ -75,6 +75,12 @@ type BnbBalance struct {
 	Amount float64
 }
 
+type BnbReward struct {
+	ID        int64
+	UserId    int64
+	BnbReward float64
+}
+
 type Withdraw struct {
 	ID              int64
 	UserId          int64
@@ -147,6 +153,8 @@ type UserBalanceRepo interface {
 	DepositLast(ctx context.Context, userId int64, lastAmount int64, locationId int64) (int64, error)
 	DepositDhb(ctx context.Context, userId int64, amount int64) (int64, error)
 	GetUserBalance(ctx context.Context, userId int64) (*UserBalance, error)
+	AddBnbAmount(ctx context.Context, userId int64, amount float64) error
+	SubBnbAmount(ctx context.Context, userId int64, amount float64) error
 	GetUserRewardByUserId(ctx context.Context, userId int64) ([]*Reward, error)
 	GetUserRewardByUserIds(ctx context.Context, userIds ...int64) (map[int64]*UserSortRecommendReward, error)
 	GetUserRewards(ctx context.Context, b *Pagination, userId int64) ([]*Reward, error, int64)
@@ -1669,8 +1677,35 @@ func (uuc *UserUseCase) UpdateUserBnbBalance(ctx context.Context, userId int64, 
 	return uuc.ubRepo.UpdateUserBnbBalance(ctx, userId, amount)
 }
 
-func (uuc *UserUseCase) SelectUserBnbBalance(ctx context.Context, userId int64, amount float64) (*BnbBalance, error) {
-	return uuc.ubRepo.UpdateUserBnbBalance(ctx, userId, amount)
+func (uuc *UserUseCase) AddUserBnbAmount(ctx context.Context, userRewardMap map[int64]float64, rate float64) error {
+	//var err error
+	fmt.Println(rate)
+	//if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+
+	for userId, vUserRewardMap := range userRewardMap {
+		if userId == 2 {
+			fmt.Println(userId, vUserRewardMap, vUserRewardMap*rate)
+		} else if userId == 1 {
+			fmt.Println(userId, vUserRewardMap, vUserRewardMap*rate)
+		}
+
+		// 新增
+		//err = uuc.ubRepo.AddBnbAmount(ctx, userId, vUserRewardMap*rate)
+		//if nil != err {
+		//	return err
+		//}
+	}
+
+	//	return nil
+	//}); nil != err {
+	//	return err
+	//}
+
+	return nil
+}
+
+func (uuc *UserUseCase) SubUserBnbAmount(ctx context.Context, userId int64, amount float64) error {
+	return uuc.ubRepo.SubBnbAmount(ctx, userId, amount)
 }
 
 func (uuc *UserUseCase) UploadRecommendUser(ctx context.Context, req *v1.UploadRecommendUserRequest) ([]string, []string, error) {

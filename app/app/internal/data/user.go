@@ -127,6 +127,14 @@ type Reward struct {
 	UpdatedAt        time.Time `gorm:"type:datetime;not null"`
 }
 
+type BnbReward struct {
+	ID        int64     `gorm:"primarykey;type:int"`
+	UserId    int64     `gorm:"type:int;not null"`
+	BnbReward float64   `gorm:"type:decimal(65,20);not null"`
+	CreatedAt time.Time `gorm:"type:datetime;not null"`
+	UpdatedAt time.Time `gorm:"type:datetime;not null"`
+}
+
 type UserRepo struct {
 	data *Data
 	log  *log.Helper
@@ -849,6 +857,38 @@ func (ub UserBalanceRepo) GetUserBalance(ctx context.Context, userId int64) (*bi
 		BalanceUsdt: userBalance.BalanceUsdt,
 		BalanceDhb:  userBalance.BalanceDhb,
 	}, nil
+}
+
+// AddBnbAmount .
+func (ub *UserBalanceRepo) AddBnbAmount(ctx context.Context, userId int64, amount float64) error {
+	var err error
+	if err = ub.data.DB(ctx).Table("user_balance").
+		Where("user_id=?", userId).
+		Updates(map[string]interface{}{"bnb_amount": gorm.Expr("bnb_amount + ?", amount)}).Error; nil != err {
+		return errors.NotFound("user balance err", "user balance not found")
+	}
+
+	var reward BnbReward
+	reward.UserId = userId
+	reward.BnbReward = amount
+
+	err = ub.data.DB(ctx).Table("bnb_reward").Create(&reward).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SubBnbAmount .
+func (ub *UserBalanceRepo) SubBnbAmount(ctx context.Context, userId int64, amount float64) error {
+	if res := ub.data.DB(ctx).Table("user_balance").
+		Where("user_id=? and bnb_amount>=?", userId, amount).
+		Updates(map[string]interface{}{"bnb_amount": gorm.Expr("bnb_amount - ?", amount)}); 0 == res.RowsAffected || nil != res.Error {
+		return errors.NotFound("user balance err", "user balance error")
+	}
+
+	return nil
 }
 
 // LocationReward .
