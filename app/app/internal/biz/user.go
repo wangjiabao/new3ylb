@@ -970,6 +970,7 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 	}
 
 	amountFloat, _ := strconv.ParseFloat(req.SendBody.Amount, 10)
+	tmpAmountFloat := amountFloat
 	amountFloat *= 10000000000
 	amount, _ := strconv.ParseInt(strconv.FormatFloat(amountFloat, 'f', -1, 64), 10, 64)
 	if 0 >= amount {
@@ -978,7 +979,7 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 		}, nil
 	}
 
-	if "bnb" == req.SendBody.Type && userBalance.BnbAmount < amountFloat {
+	if "bnb" == req.SendBody.Type && userBalance.BnbAmount < tmpAmountFloat {
 		return &v1.WithdrawReply{
 			Status: "fail",
 			Msg:    "余额不足",
@@ -1020,7 +1021,7 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 				return err
 			}
 		} else if "bnb" == req.SendBody.Type {
-			err = uuc.ubRepo.WithdrawBnb(ctx, user.ID, amountFloat, amount) // 提现
+			err = uuc.ubRepo.WithdrawBnb(ctx, user.ID, tmpAmountFloat, amount) // 提现
 			if nil != err {
 				return err
 			}
