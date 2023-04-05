@@ -617,6 +617,9 @@ components:
                     type: string
                 teamUserBnbBalanceAmount:
                     type: string
+                teamUserBnbBalanceAmountInt:
+                    type: integer
+                    format: int64
         UserInfoReply_List:
             type: object
             properties:

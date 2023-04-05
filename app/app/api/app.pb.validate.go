@@ -950,6 +950,8 @@ func (m *UserInfoReply) validate(all bool) error {
 
 	// no validation rules for TeamUserBnbBalanceAmount
 
+	// no validation rules for TeamUserBnbBalanceAmountInt
+
 	if len(errors) > 0 {
 		return UserInfoReplyMultiError(errors)
 	}
