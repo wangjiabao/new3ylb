@@ -1003,7 +1003,7 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 		userBalance *UserBalance
 	)
 
-	if "dhb" != req.SendBody.Type && "usdt" != req.SendBody.Type || "bnb" != req.SendBody.Type {
+	if "dhb" != req.SendBody.Type && "usdt" != req.SendBody.Type && "bnb" != req.SendBody.Type {
 		return &v1.WithdrawReply{
 			Status: "fail",
 			Msg:    "类型错误",
