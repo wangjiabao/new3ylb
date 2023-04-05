@@ -692,12 +692,12 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		return nil, err
 	}
 
-	rateFloat, _ := strconv.ParseFloat(fmt.Sprintf("%.8f", rate/10000000000), 64)
-	if rateFloat <= 0 {
-		return nil, errors.New(500, "ERROR_TOKEN", "分红比率错误")
-	}
+	//rateFloat, _ := strconv.ParseFloat(fmt.Sprintf("%.7f", rate/10000000000), 64)
+	//if rateFloat <= 0 {
+	//	return nil, errors.New(500, "ERROR_TOKEN", "分红比率错误")
+	//}
 
-	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, rateFloat, usersMap)
+	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, rate, usersMap)
 	if nil != err {
 		return nil, err
 	}

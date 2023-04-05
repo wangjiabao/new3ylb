@@ -1703,11 +1703,10 @@ func (uuc *UserUseCase) AddUserBnbAmount(ctx context.Context, userRewardMap map[
 
 	for userId, vUserRewardMap := range userRewardMap {
 
-		rateFloat, _ := strconv.ParseFloat(fmt.Sprintf("%.6f", vUserRewardMap*rate), 64)
+		rateFloat, _ := strconv.ParseFloat(fmt.Sprintf("%.8f", vUserRewardMap*rate/10000000000), 64)
 		if rateFloat <= 0 {
-			return errors.New(500, "ERROR_TOKEN", "分红比率错误")
+			fmt.Println("aa")
 		}
-
 		fmt.Println(vUserRewardMap, rateFloat, usersMap[userId])
 
 		// 新增
