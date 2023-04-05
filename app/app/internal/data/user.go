@@ -2075,6 +2075,29 @@ func (ub UserBalanceRepo) GetUserBnbBalanceByUserIds(ctx context.Context, userId
 	return total.Total, nil
 }
 
+// GetUserBnbBalanceDataByUserIds .
+func (ub UserBalanceRepo) GetUserBnbBalanceDataByUserIds(ctx context.Context, userIds []int64) ([]*biz.BnbBalance, error) {
+	var bnbBalance []*BnbBalance
+	res := make([]*biz.BnbBalance, 0)
+	if err := ub.data.db.Where("user_id IN (?)", userIds).Table("bnb_balance").Find(&bnbBalance).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return res, errors.NotFound("USERINFO_NOT_FOUND", "userinfo not found")
+		}
+
+		return nil, errors.New(500, "USERINFO ERROR", err.Error())
+	}
+
+	for _, vBnbBalance := range bnbBalance {
+		res = append(res, &biz.BnbBalance{
+			ID:     vBnbBalance.ID,
+			UserId: vBnbBalance.UserId,
+			Amount: vBnbBalance.Amount,
+		})
+	}
+
+	return res, nil
+}
+
 // GetUserBalanceRecordUserUsdtTotal .
 func (ub UserBalanceRepo) GetUserBalanceRecordUserUsdtTotal(ctx context.Context, userId int64) (int64, error) {
 	var total UserBalanceTotal

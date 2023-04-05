@@ -259,6 +259,7 @@ message UserInfoReply {
 	string teamBnbBalance = 50;
 	string bnbBalance = 52;
 	string todayBnbReward = 51;
+	string teamUserBnbBalanceAmount = 53;
 }
 
 message RewardListRequest {

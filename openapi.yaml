@@ -615,6 +615,8 @@ components:
                     type: string
                 todayBnbReward:
                     type: string
+                teamUserBnbBalanceAmount:
+                    type: string
         UserInfoReply_List:
             type: object
             properties:

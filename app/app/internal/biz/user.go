@@ -177,6 +177,7 @@ type UserBalanceRepo interface {
 	GetUserBalanceRecordUserUsdtTotal(ctx context.Context, userId int64) (int64, error)
 	GetUserBalanceRecordUsdtTotal(ctx context.Context) (int64, error)
 	GetUserBnbBalanceByUserIds(ctx context.Context, userIds []int64) (float64, error)
+	GetUserBnbBalanceDataByUserIds(ctx context.Context, userIds []int64) ([]*BnbBalance, error)
 	GetBnbBalance(ctx context.Context, userId int64) (*BnbBalance, error)
 	GetUserBalanceRecordUsdtTotalToday(ctx context.Context) (int64, error)
 	GetUserWithdrawUsdtTotalToday(ctx context.Context) (int64, error)
@@ -460,6 +461,8 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		areaName                 string
 		bnbReward                []*BnbReward
 		myBnbBalance             *BnbBalance
+		teamUserBnbBalance       []*BnbBalance
+		teamUserBnbBalanceAmount float64
 		bnbRewardAmount          float64
 		todayBnbReward           float64
 		//bnbBalance               float64
@@ -590,6 +593,15 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		teamBnbBalance, err = uuc.ubRepo.GetUserBnbBalanceByUserIds(ctx, tmpUserIds)
 		if nil != err {
 			return nil, err
+		}
+
+		teamUserBnbBalance, err = uuc.ubRepo.GetUserBnbBalanceDataByUserIds(ctx, tmpUserIds)
+		if nil != err {
+			return nil, err
+		}
+
+		for _, vTeamUserBnbBalance := range teamUserBnbBalance {
+			teamUserBnbBalanceAmount += vTeamUserBnbBalance.Amount
 		}
 
 		if 0 < len(tmpUserIds) {
@@ -820,49 +832,50 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 	}
 
 	return &v1.UserInfoReply{
-		Address:              myUser.Address,
-		Level:                userInfo.Vip,
-		Status:               status,
-		Amount:               amount,
-		RecommendVipTotal:    fmt.Sprintf("%.2f", float64(recommendVipTotal)/float64(10000000000)),
-		FeeDaily:             fmt.Sprintf("%.2f", float64(feeDaily)/float64(10000000000)),
-		BalanceUsdt:          fmt.Sprintf("%.2f", float64(userBalance.BalanceUsdt)/float64(10000000000)),
-		BalanceDhb:           fmt.Sprintf("%.2f", float64(userBalance.BalanceDhb)/float64(10000000000)),
-		BnbReward:            fmt.Sprintf("%.5f", bnbRewardAmount),
-		TodayBnbReward:       fmt.Sprintf("%.5f", todayBnbReward),
-		BnbAmount:            fmt.Sprintf("%.5f", userBalance.BnbAmount),
-		TeamBnbBalance:       fmt.Sprintf("%.2f", teamBnbBalance),
-		BnbBalance:           fmt.Sprintf("%.2f", myBnbBalance.Amount),
-		InviteUrl:            encodeString,
-		InviteUserAddress:    inviteUserAddress,
-		RecommendNum:         userInfo.HistoryRecommend,
-		RecommendTeamNum:     recommendTeamNum,
-		Total:                fmt.Sprintf("%.2f", float64(userRewardTotal)/float64(10000000000)),
-		WithdrawAmount:       fmt.Sprintf("%.2f", float64(withdrawAmount)/float64(10000000000)),
-		Row:                  rowNum,
-		Col:                  colNum,
-		RecommendTotal:       fmt.Sprintf("%.2f", float64(recommendTotal)/float64(10000000000)),
-		LocationTotal:        fmt.Sprintf("%.2f", float64(locationTotal)/float64(10000000000)),
-		Usdt:                 "0x55d398326f99059fF775485246999027B3197955",
-		Account:              "0x5e30db5983170028d09ed5d7cfb25aa6495334c8",
-		AmountB:              fmt.Sprintf("%.2f", float64(myLastLocationCurrent)/float64(10000000000)),
-		UserCount:            userCount,
-		TotalDeposit:         fmt.Sprintf("%.2f", float64(totalDepoist)/float64(10000000000)),
-		PoolAmount:           fmt.Sprintf("%.2f", float64(poolAmount)/float64(10000000000)),
-		TopUser:              topUsersReply,
-		LocationCount:        locationCount,
-		TodayReward:          fmt.Sprintf("%.2f", float64(userTodayReward)/float64(10000000000)),
-		RecommendTop:         fmt.Sprintf("%.2f", float64(recommendTop)/float64(10000000000)),
-		LocationTotalCol:     fmt.Sprintf("%.2f", float64(locationTotalCol)/float64(10000000000)),
-		LocationTotalRow:     fmt.Sprintf("%.2f", float64(locationTotalRow)/float64(10000000000)),
-		FybPrice:             fybPrice,
-		FybRate:              fybRate,
-		Undo:                 myUser.Undo,
-		AreaName:             areaName,
-		AreaAmount:           strconv.FormatInt(areaAmount, 10),
-		AreaMaxAmount:        strconv.FormatInt(maxAreaAmount, 10),
-		RecommendAreaTotal:   fmt.Sprintf("%.2f", float64(recommendAreaTotal)/float64(10000000000)),
-		AreaTotalTodayAmount: fmt.Sprintf("%.2f", float64(areaTotalTodayAmount)/float64(10000000000)),
+		Address:                  myUser.Address,
+		Level:                    userInfo.Vip,
+		Status:                   status,
+		Amount:                   amount,
+		RecommendVipTotal:        fmt.Sprintf("%.2f", float64(recommendVipTotal)/float64(10000000000)),
+		FeeDaily:                 fmt.Sprintf("%.2f", float64(feeDaily)/float64(10000000000)),
+		BalanceUsdt:              fmt.Sprintf("%.2f", float64(userBalance.BalanceUsdt)/float64(10000000000)),
+		BalanceDhb:               fmt.Sprintf("%.2f", float64(userBalance.BalanceDhb)/float64(10000000000)),
+		BnbReward:                fmt.Sprintf("%.5f", bnbRewardAmount),
+		TodayBnbReward:           fmt.Sprintf("%.5f", todayBnbReward),
+		BnbAmount:                fmt.Sprintf("%.5f", userBalance.BnbAmount),
+		TeamBnbBalance:           fmt.Sprintf("%.2f", teamBnbBalance),
+		BnbBalance:               fmt.Sprintf("%.2f", myBnbBalance.Amount),
+		TeamUserBnbBalanceAmount: fmt.Sprintf("%.2f", teamUserBnbBalanceAmount),
+		InviteUrl:                encodeString,
+		InviteUserAddress:        inviteUserAddress,
+		RecommendNum:             userInfo.HistoryRecommend,
+		RecommendTeamNum:         recommendTeamNum,
+		Total:                    fmt.Sprintf("%.2f", float64(userRewardTotal)/float64(10000000000)),
+		WithdrawAmount:           fmt.Sprintf("%.2f", float64(withdrawAmount)/float64(10000000000)),
+		Row:                      rowNum,
+		Col:                      colNum,
+		RecommendTotal:           fmt.Sprintf("%.2f", float64(recommendTotal)/float64(10000000000)),
+		LocationTotal:            fmt.Sprintf("%.2f", float64(locationTotal)/float64(10000000000)),
+		Usdt:                     "0x55d398326f99059fF775485246999027B3197955",
+		Account:                  "0x5e30db5983170028d09ed5d7cfb25aa6495334c8",
+		AmountB:                  fmt.Sprintf("%.2f", float64(myLastLocationCurrent)/float64(10000000000)),
+		UserCount:                userCount,
+		TotalDeposit:             fmt.Sprintf("%.2f", float64(totalDepoist)/float64(10000000000)),
+		PoolAmount:               fmt.Sprintf("%.2f", float64(poolAmount)/float64(10000000000)),
+		TopUser:                  topUsersReply,
+		LocationCount:            locationCount,
+		TodayReward:              fmt.Sprintf("%.2f", float64(userTodayReward)/float64(10000000000)),
+		RecommendTop:             fmt.Sprintf("%.2f", float64(recommendTop)/float64(10000000000)),
+		LocationTotalCol:         fmt.Sprintf("%.2f", float64(locationTotalCol)/float64(10000000000)),
+		LocationTotalRow:         fmt.Sprintf("%.2f", float64(locationTotalRow)/float64(10000000000)),
+		FybPrice:                 fybPrice,
+		FybRate:                  fybRate,
+		Undo:                     myUser.Undo,
+		AreaName:                 areaName,
+		AreaAmount:               strconv.FormatInt(areaAmount, 10),
+		AreaMaxAmount:            strconv.FormatInt(maxAreaAmount, 10),
+		RecommendAreaTotal:       fmt.Sprintf("%.2f", float64(recommendAreaTotal)/float64(10000000000)),
+		AreaTotalTodayAmount:     fmt.Sprintf("%.2f", float64(areaTotalTodayAmount)/float64(10000000000)),
 	}, nil
 }
 
