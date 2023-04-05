@@ -537,7 +537,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 	}
 
-	if buyRewardAmount < 0 || sellRewardAmount < 0 {
+	if buyRewardAmount <= 0 || sellRewardAmount <= 0 {
 		return nil, errors.New(500, "ERROR_TOKEN", "分红金额错误")
 	}
 

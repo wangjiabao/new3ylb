@@ -243,7 +243,7 @@ func (uuc *UserUseCase) GetUserByAddress(ctx context.Context, Addresses ...strin
 }
 
 func (uuc *UserUseCase) GetDhbConfig(ctx context.Context) ([]*Config, error) {
-	return uuc.configRepo.GetConfigByKeys(ctx, "level1Dhb", "level2Dhb", "level3Dhb")
+	return uuc.configRepo.GetConfigByKeys(ctx, "reward_buy_amount", "reward_sell_amount")
 }
 
 func (uuc *UserUseCase) GetExistUserByAddressOrCreate(ctx context.Context, u *User, req *v1.EthAuthorizeRequest) (*User, error) {
