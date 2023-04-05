@@ -1236,6 +1236,30 @@ func (ub *UserBalanceRepo) UpdateWithdraw(ctx context.Context, id int64, status 
 	}, nil
 }
 
+// GetBnbRewardByUserId .
+func (ub *UserBalanceRepo) GetBnbRewardByUserId(ctx context.Context, userId int64) ([]*biz.BnbReward, error) {
+	var bnbReward []*BnbReward
+	res := make([]*biz.BnbReward, 0)
+	if err := ub.data.db.Where("user_id=?", userId).Table("bnb_reward").Find(&bnbReward).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return res, errors.NotFound("WITHDRAW_NOT_FOUND", "withdraw not found")
+		}
+
+		return nil, errors.New(500, "WITHDRAW ERROR", err.Error())
+	}
+
+	for _, v := range bnbReward {
+		res = append(res, &biz.BnbReward{
+			ID:        v.ID,
+			UserId:    v.UserId,
+			BnbReward: v.BnbReward,
+			CreatedAt: v.CreatedAt,
+		})
+	}
+
+	return res, nil
+}
+
 // GetWithdrawByUserId .
 func (ub *UserBalanceRepo) GetWithdrawByUserId(ctx context.Context, userId int64) ([]*biz.Withdraw, error) {
 	var withdraws []*Withdraw

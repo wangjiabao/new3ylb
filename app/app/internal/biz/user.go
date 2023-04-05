@@ -80,6 +80,7 @@ type BnbReward struct {
 	ID        int64
 	UserId    int64
 	BnbReward float64
+	CreatedAt time.Time
 }
 
 type Withdraw struct {
@@ -154,6 +155,7 @@ type UserBalanceRepo interface {
 	DepositLast(ctx context.Context, userId int64, lastAmount int64, locationId int64) (int64, error)
 	DepositDhb(ctx context.Context, userId int64, amount int64) (int64, error)
 	GetUserBalance(ctx context.Context, userId int64) (*UserBalance, error)
+	GetBnbRewardByUserId(ctx context.Context, userId int64) ([]*BnbReward, error)
 	AddBnbAmount(ctx context.Context, userId int64, amount float64) error
 	SubBnbAmount(ctx context.Context, userId int64, amount float64) error
 	GetUserRewardByUserId(ctx context.Context, userId int64) ([]*Reward, error)
@@ -455,8 +457,13 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		recommendAreaThreeName   string
 		recommendAreaFourName    string
 		areaName                 string
-		areaTotalTodayAmount     int64
-		err                      error
+		bnbReward                []*BnbReward
+		bnbRewardAmount          float64
+		todayBnbReward           float64
+		//bnbBalance               float64
+		//teamBnbBalance           float64
+		areaTotalTodayAmount int64
+		err                  error
 	)
 
 	myUser, err = uuc.repo.GetUserById(ctx, user.ID)
@@ -502,7 +509,16 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 	// 充值记录
 	totalDepoist, err = uuc.ubRepo.GetUserBalanceRecordUserUsdtTotal(ctx, myUser.ID)
 
-	now := time.Now().UTC().Add(8 * time.Hour)
+	now := time.Now().UTC()
+	var startDate time.Time
+	if 16 <= now.Hour() {
+		startDate = now
+	} else {
+		startDate = now.AddDate(0, 0, -1)
+	}
+
+	todayStart := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 16, 0, 0, 0, time.UTC)
+
 	myLastStopLocation, err = uuc.locationRepo.GetMyStopLocationLast(ctx, myUser.ID) // 冻结
 	if nil != myLastStopLocation && now.Before(myLastStopLocation.StopDate.Add(24*time.Hour)) && !hasRunningLocation {
 		myLastLocationCurrent = myLastStopLocation.Current - myLastStopLocation.CurrentMax // 补上
@@ -511,6 +527,18 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 	userBalance, err = uuc.ubRepo.GetUserBalance(ctx, myUser.ID)
 	if nil != err {
 		return nil, err
+	}
+
+	bnbReward, err = uuc.ubRepo.GetBnbRewardByUserId(ctx, myUser.ID)
+	if nil != err {
+		return nil, err
+	}
+
+	for _, vBnbReward := range bnbReward {
+		bnbRewardAmount += vBnbReward.BnbReward
+		if vBnbReward.CreatedAt.After(todayStart) {
+			todayBnbReward += vBnbReward.BnbReward
+		}
 	}
 
 	userRecommend, err = uuc.urRepo.GetUserRecommendByUserId(ctx, myUser.ID)
@@ -783,7 +811,9 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		FeeDaily:             fmt.Sprintf("%.2f", float64(feeDaily)/float64(10000000000)),
 		BalanceUsdt:          fmt.Sprintf("%.2f", float64(userBalance.BalanceUsdt)/float64(10000000000)),
 		BalanceDhb:           fmt.Sprintf("%.2f", float64(userBalance.BalanceDhb)/float64(10000000000)),
-		BnbAmount:            fmt.Sprintf("%.2f", userBalance.BnbAmount),
+		BnbReward:            fmt.Sprintf("%.5f", bnbRewardAmount),
+		TodayBnbReward:       fmt.Sprintf("%.5f", todayBnbReward),
+		BnbAmount:            fmt.Sprintf("%.5f", userBalance.BnbAmount),
 		InviteUrl:            encodeString,
 		InviteUserAddress:    inviteUserAddress,
 		RecommendNum:         userInfo.HistoryRecommend,

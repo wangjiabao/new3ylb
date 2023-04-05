@@ -635,23 +635,23 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		var tmpBuyAmount float64
 		var tmpSellAmount float64
 		if 1 == k {
-			fmt.Println(len(vUserReward))
+			//fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount / 100 * 10 / float64(len(vUserReward))
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
 		} else if 2 == k {
-			fmt.Println(len(vUserReward))
+			//fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount / 100 * 15 / float64(len(vUserReward))
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
 		} else if 3 == k {
-			fmt.Println(len(vUserReward))
+			//fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount / 100 * 20 / float64(len(vUserReward))
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
 		} else if 4 == k {
-			fmt.Println(len(vUserReward))
+			//fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount / 100 * 25 / float64(len(vUserReward))
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
 		} else if 5 == k {
-			fmt.Println(len(vUserReward))
+			//fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount / 100 * 30 / float64(len(vUserReward))
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
 		}
@@ -671,7 +671,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 				userRewardMap[vVUserReward] = float64(0)
 			}
 			if vVUserReward == 2 {
-				fmt.Println(vVUserReward, tmpSellAmount, tmpBuyAmount)
+				//fmt.Println(vVUserReward, tmpSellAmount, tmpBuyAmount)
 			}
 			userRewardMap[vVUserReward] += tmpSellAmount
 			userRewardMap[vVUserReward] += tmpBuyAmount

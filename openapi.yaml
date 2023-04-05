@@ -605,7 +605,15 @@ components:
                     type: string
                 areaTotalTodayAmount:
                     type: string
-                BnbAmount:
+                bnbAmount:
+                    type: string
+                bnbReward:
+                    type: string
+                teamBnbBalance:
+                    type: string
+                bnbBalance:
+                    type: string
+                todayBnbReward:
                     type: string
         UserInfoReply_List:
             type: object
