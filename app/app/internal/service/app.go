@@ -576,10 +576,6 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 
 		for _, vTmpUserRecommendLow := range tmpUserRecommendLow {
-			if vTmpUserRecommendLow.RecommendCode == tmpUserRecommend.RecommendCode+"D"+strconv.FormatInt(vUsers.ID, 10) {
-				continue
-			}
-
 			tmpUserRecommendLowUserIds = append(tmpUserRecommendLowUserIds, vTmpUserRecommendLow.UserId)
 		}
 
@@ -592,14 +588,6 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		tmpBalanceAll, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBalanceAll), 64)
 		if nil != err {
 			return nil, err
-		}
-
-		if vUsers.ID == 364 {
-			fmt.Println(tmpBalanceAll)
-		}
-
-		if vUsers.ID == 2 {
-			fmt.Println(tmpBalanceAll, tmpBalanceAll > 15001)
 		}
 
 		if tmpBalanceAll > 1000 {
