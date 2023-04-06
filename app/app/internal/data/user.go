@@ -810,19 +810,14 @@ func (ub UserBalanceRepo) CreateUserBnbBalance(ctx context.Context, u *biz.User)
 
 // UpdateUserBnbBalance .
 func (ub *UserBalanceRepo) UpdateUserBnbBalance(ctx context.Context, userId int64, amount float64) (*biz.BnbBalance, error) {
-	var bnbBalance BnbBalance
-	bnbBalance.Amount = amount
-	bnbBalance.UpdatedAt = time.Now()
-	res := ub.data.DB(ctx).Table("bnb_balance").Where("user_id=?", userId).Updates(&bnbBalance)
-	if res.Error != nil {
-		return nil, errors.New(500, "UPDATE_BNB_BALANCE_ERROR", "记录修改失败")
+	var err error
+	if err = ub.data.DB(ctx).Table("bnb_balance").
+		Where("user_id=?", userId).
+		Updates(map[string]interface{}{"amount": amount}).Error; nil != err {
+		return nil, errors.NotFound("bnb balance err", "bnb balance not found")
 	}
 
-	return &biz.BnbBalance{
-		ID:     bnbBalance.ID,
-		UserId: bnbBalance.UserId,
-		Amount: bnbBalance.Amount,
-	}, nil
+	return nil, nil
 }
 
 func (ub *UserBalanceRepo) GetUserBnbBalanceByUserId(ctx context.Context, userId int64) (*biz.BnbBalance, error) {
