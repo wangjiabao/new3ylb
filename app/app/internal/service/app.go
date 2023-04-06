@@ -632,39 +632,24 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		var tmpSellAmount float64
 		if 1 == k {
 			//fmt.Println(len(vUserReward))
-			for _, vVUserReward := range vUserReward {
-				fmt.Println(k, vVUserReward, usersMap[vVUserReward])
-			}
 			tmpBuyAmount = buyRewardAmount / 100 * 10 / float64(len(vUserReward))
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
 		} else if 2 == k {
 			//fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount / 100 * 15 / float64(len(vUserReward))
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
-			for _, vVUserReward := range vUserReward {
-				fmt.Println(k, vVUserReward, usersMap[vVUserReward])
-			}
 		} else if 3 == k {
 			//fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount / 100 * 20 / float64(len(vUserReward))
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
-			for _, vVUserReward := range vUserReward {
-				fmt.Println(k, vVUserReward, usersMap[vVUserReward])
-			}
 		} else if 4 == k {
 			//fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount / 100 * 25 / float64(len(vUserReward))
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
-			for _, vVUserReward := range vUserReward {
-				fmt.Println(k, vVUserReward, usersMap[vVUserReward])
-			}
 		} else if 5 == k {
 			//fmt.Println(len(vUserReward))
 			tmpBuyAmount = buyRewardAmount / 100 * 30 / float64(len(vUserReward))
 			tmpSellAmount = sellRewardAmount / 100 * 20 / float64(len(vUserReward))
-			for _, vVUserReward := range vUserReward {
-				fmt.Println(k, vVUserReward, usersMap[vVUserReward])
-			}
 		}
 
 		tmpBuyAmount, err = strconv.ParseFloat(fmt.Sprintf("%.7f", tmpBuyAmount), 64)
