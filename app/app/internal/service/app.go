@@ -583,10 +583,9 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			tmpUserRecommendLowUserIds = append(tmpUserRecommendLowUserIds, vTmpUserRecommendLow.UserId)
 		}
 
-		if 0 >= len(tmpUserRecommendLowUserIds) {
-			continue
+		if vUsers.ID == 364 {
+			fmt.Println(tmpBalanceAll)
 		}
-
 		tmpUserRecommendLowUserIds = append(tmpUserRecommendLowUserIds, vUsers.ID)
 		tmpBalanceAll, err = a.uuc.GetUserBnbBalance(ctx, tmpUserRecommendLowUserIds)
 		if nil != err {
@@ -595,6 +594,10 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		tmpBalanceAll, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBalanceAll), 64)
 		if nil != err {
 			return nil, err
+		}
+
+		if vUsers.ID == 364 {
+			fmt.Println(tmpBalanceAll)
 		}
 
 		if tmpBalanceAll > 1000 {
@@ -673,9 +676,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			if _, ok := userRewardMap[vVUserReward]; !ok {
 				userRewardMap[vVUserReward] = float64(0)
 			}
-			if vVUserReward == 2 {
-				//fmt.Println(vVUserReward, tmpSellAmount, tmpBuyAmount)
-			}
+
 			userRewardMap[vVUserReward] += tmpSellAmount
 			userRewardMap[vVUserReward] += tmpBuyAmount
 		}
