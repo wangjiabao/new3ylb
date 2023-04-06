@@ -736,6 +736,9 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 		}
 		//fmt.Println(num, num%4, tmpBal)
 
+		if vUsers.ID == 4191 {
+			fmt.Println(tmpBal)
+		}
 		var currentBalance float64
 		lenBalance := len(tmpBal)
 		if lenBalance > 14 {
@@ -746,6 +749,10 @@ func (a *AppService) UpdateUserBnbBalance(ctx context.Context, req *v1.UpdateUse
 			currentBalance /= 10000
 		} else {
 			currentBalance = 0
+		}
+
+		if vUsers.ID == 4191 {
+			fmt.Println(currentBalance)
 		}
 
 		_, err = a.uuc.UpdateUserBnbBalance(ctx, vUsers.ID, currentBalance)
