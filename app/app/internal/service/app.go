@@ -570,7 +570,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			return nil, err
 		}
 
-		tmpUserRecommendLow, err = a.uuc.GetUserLow(ctx, tmpUserRecommend.RecommendCode)
+		tmpUserRecommendLow, err = a.uuc.GetUserLow(ctx, tmpUserRecommend.RecommendCode+"D"+strconv.FormatInt(vUsers.ID, 10))
 		if nil != err {
 			return nil, err
 		}
@@ -583,14 +583,12 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 			tmpUserRecommendLowUserIds = append(tmpUserRecommendLowUserIds, vTmpUserRecommendLow.UserId)
 		}
 
-		if vUsers.ID == 364 {
-			fmt.Println(tmpBalanceAll)
-		}
 		tmpUserRecommendLowUserIds = append(tmpUserRecommendLowUserIds, vUsers.ID)
 		tmpBalanceAll, err = a.uuc.GetUserBnbBalance(ctx, tmpUserRecommendLowUserIds)
 		if nil != err {
 			return nil, err
 		}
+
 		tmpBalanceAll, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBalanceAll), 64)
 		if nil != err {
 			return nil, err
@@ -598,6 +596,10 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 
 		if vUsers.ID == 364 {
 			fmt.Println(tmpBalanceAll)
+		}
+
+		if vUsers.ID == 2 {
+			fmt.Println(tmpBalanceAll, tmpBalanceAll > 15001)
 		}
 
 		if tmpBalanceAll > 1000 {
