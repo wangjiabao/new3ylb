@@ -577,10 +577,12 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 	if nil != userRecommends {
 		var (
 			tmpUserIds         []int64
+			tmpUserIds2        []int64
 			tmpUsersLocations  []*Location
 			tmpUsersLocations2 []*Location
 		)
 		for _, vUserRecommends := range userRecommends {
+			tmpUserIds2 = append(tmpUserIds2, vUserRecommends.UserId)
 			if vUserRecommends.RecommendCode == myCode {
 				continue
 			}
@@ -589,7 +591,7 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 
 		}
 
-		teamBnbBalance, err = uuc.ubRepo.GetUserBnbBalanceByUserIds(ctx, tmpUserIds)
+		teamBnbBalance, err = uuc.ubRepo.GetUserBnbBalanceByUserIds(ctx, tmpUserIds2)
 		if nil != err {
 			return nil, err
 		}
