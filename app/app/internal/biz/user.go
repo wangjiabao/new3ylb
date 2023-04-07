@@ -1762,10 +1762,10 @@ func (uuc *UserUseCase) AddUserBnbAmount(ctx context.Context, userRewardMap map[
 
 			fmt.Println(userId, vUserRewardMap)
 			// 新增
-			//err = uuc.ubRepo.AddBnbAmount(ctx, userId, vUserRewardMap)
-			//if nil != err {
-			//	return err
-			//}
+			err = uuc.ubRepo.AddBnbAmount(ctx, userId, vUserRewardMap)
+			if nil != err {
+				return err
+			}
 		}
 
 		return nil

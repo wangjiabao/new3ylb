@@ -593,7 +593,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 
 		if tmpBalanceAll > 1000 {
-			fmt.Println(tmpBalanceAll, vUsers.ID)
+			//fmt.Println(tmpBalanceAll, vUsers.ID)
 			if _, ok := userReward[1]; !ok {
 				userReward[1] = make([]int64, 0)
 			}
@@ -601,7 +601,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 
 		if tmpBalanceAll >= 10001 {
-			fmt.Println(tmpBalanceAll, vUsers.ID)
+			//fmt.Println(tmpBalanceAll, vUsers.ID)
 			if _, ok := userReward[2]; !ok {
 				userReward[2] = make([]int64, 0)
 			}
@@ -609,7 +609,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 
 		if tmpBalanceAll >= 50001 {
-			fmt.Println(tmpBalanceAll, vUsers.ID)
+			//fmt.Println(tmpBalanceAll, vUsers.ID)
 			if _, ok := userReward[3]; !ok {
 				userReward[3] = make([]int64, 0)
 			}
@@ -617,7 +617,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 
 		if tmpBalanceAll >= 100001 {
-			fmt.Println(tmpBalanceAll, vUsers.ID)
+			//fmt.Println(tmpBalanceAll, vUsers.ID)
 			if _, ok := userReward[4]; !ok {
 				userReward[4] = make([]int64, 0)
 			}
@@ -625,7 +625,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 
 		if tmpBalanceAll >= 150001 {
-			fmt.Println(tmpBalanceAll, vUsers.ID)
+			//fmt.Println(tmpBalanceAll, vUsers.ID)
 			if _, ok := userReward[5]; !ok {
 				userReward[5] = make([]int64, 0)
 			}
