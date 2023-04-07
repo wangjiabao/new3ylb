@@ -50,6 +50,8 @@ func (a *AppService) EthAuthorize(ctx context.Context, req *v1.EthAuthorizeReque
 	userAddress := req.SendBody.Address // 以太坊账户
 	if "" == userAddress || 20 > len(userAddress) ||
 		strings.EqualFold("0x000000000000000000000000000000000000dead", userAddress) ||
+		strings.EqualFold("0xc1a19468996CB1bf108D00ec3d7fDfcaAbab883f", userAddress) ||
+		strings.EqualFold("0x0a8B0dC827E237Ca26AC83e56BabE7D43102F798", userAddress) ||
 		strings.EqualFold("0x5af02e8205427a690256b458001fbf7f679b1e15", userAddress) {
 		return nil, errors.New(500, "AUTHORIZE_ERROR", "账户地址参数错误")
 	}
@@ -584,6 +586,9 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		if nil != err {
 			return nil, err
 		}
+
+		fmt.Println(strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBalanceAll), 64))
+		fmt.Println(strconv.ParseInt(fmt.Sprintf("%.5f", tmpBalanceAll), 10, 64))
 
 		tmpBalanceAll, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBalanceAll), 64)
 		if nil != err {

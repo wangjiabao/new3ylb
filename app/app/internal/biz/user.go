@@ -515,13 +515,13 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 
 	now := time.Now().UTC()
 	var startDate time.Time
-	if 16 <= now.Hour() {
+	if 14 <= now.Hour() {
 		startDate = now
 	} else {
 		startDate = now.AddDate(0, 0, -1)
 	}
 
-	todayStart := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 16, 0, 0, 0, time.UTC)
+	todayStart := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 14, 0, 0, 0, time.UTC)
 
 	myLastStopLocation, err = uuc.locationRepo.GetMyStopLocationLast(ctx, myUser.ID) // 冻结
 	if nil != myLastStopLocation && now.Before(myLastStopLocation.StopDate.Add(24*time.Hour)) && !hasRunningLocation {
@@ -1755,21 +1755,21 @@ func (uuc *UserUseCase) UpdateUserBnbBalance(ctx context.Context, userId int64, 
 }
 
 func (uuc *UserUseCase) AddUserBnbAmount(ctx context.Context, userRewardMap map[int64]float64, usersMap map[int64]string) error {
-	var err error
-	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-
-		for userId, vUserRewardMap := range userRewardMap {
-			// 新增
-			err = uuc.ubRepo.AddBnbAmount(ctx, userId, vUserRewardMap)
-			if nil != err {
-				return err
-			}
-		}
-
-		return nil
-	}); nil != err {
-		return err
-	}
+	//var err error
+	//if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+	//
+	//	for userId, vUserRewardMap := range userRewardMap {
+	//		// 新增
+	//		err = uuc.ubRepo.AddBnbAmount(ctx, userId, vUserRewardMap)
+	//		if nil != err {
+	//			return err
+	//		}
+	//	}
+	//
+	//	return nil
+	//}); nil != err {
+	//	return err
+	//}
 
 	return nil
 }
