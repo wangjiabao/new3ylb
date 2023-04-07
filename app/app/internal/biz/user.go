@@ -1755,21 +1755,23 @@ func (uuc *UserUseCase) UpdateUserBnbBalance(ctx context.Context, userId int64, 
 }
 
 func (uuc *UserUseCase) AddUserBnbAmount(ctx context.Context, userRewardMap map[int64]float64, usersMap map[int64]string) error {
-	//var err error
-	//if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-	//
-	//	for userId, vUserRewardMap := range userRewardMap {
-	//		// 新增
-	//		err = uuc.ubRepo.AddBnbAmount(ctx, userId, vUserRewardMap)
-	//		if nil != err {
-	//			return err
-	//		}
-	//	}
-	//
-	//	return nil
-	//}); nil != err {
-	//	return err
-	//}
+	var err error
+	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+
+		for userId, vUserRewardMap := range userRewardMap {
+
+			fmt.Println(userId, vUserRewardMap)
+			// 新增
+			//err = uuc.ubRepo.AddBnbAmount(ctx, userId, vUserRewardMap)
+			//if nil != err {
+			//	return err
+			//}
+		}
+
+		return nil
+	}); nil != err {
+		return err
+	}
 
 	return nil
 }
