@@ -588,7 +588,7 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 
 		fmt.Println(strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBalanceAll), 64))
-		fmt.Println(strconv.ParseInt(fmt.Sprintf("%.5f", tmpBalanceAll), 10, 64))
+		fmt.Println(strconv.ParseInt(fmt.Sprintf("%.0f", tmpBalanceAll), 10, 64))
 
 		tmpBalanceAll, err = strconv.ParseFloat(fmt.Sprintf("%.5f", tmpBalanceAll), 64)
 		if nil != err {
