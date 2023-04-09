@@ -1757,32 +1757,32 @@ func (uuc *UserUseCase) UpdateUserBnbBalance(ctx context.Context, userId int64, 
 }
 
 func (uuc *UserUseCase) AddUserBnbAmount(ctx context.Context, userRewardMap map[int64]*BnbReward, buyAmount float64, sellAmount float64, usersMap map[int64]string) error {
-	var err error
+	//var err error
 
-	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-		// 新增
-		err = uuc.ubRepo.AddBnbAmountTotal(ctx, buyAmount, sellAmount)
-		if nil != err {
-			return err
-		}
-		return nil
-	}); nil != err {
-		return err
-	}
-
-	for userId, vUserRewardMap := range userRewardMap {
-		if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-			// 新增
-			err = uuc.ubRepo.AddBnbAmount(ctx, userId, vUserRewardMap.BnbReward, vUserRewardMap.BalanceTotal)
-			if nil != err {
-				return err
-			}
-			return nil
-		}); nil != err {
-			return err
-		}
-
-	}
+	//if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+	//	// 新增
+	//	err = uuc.ubRepo.AddBnbAmountTotal(ctx, buyAmount, sellAmount)
+	//	if nil != err {
+	//		return err
+	//	}
+	//	return nil
+	//}); nil != err {
+	//	return err
+	//}
+	//
+	//for userId, vUserRewardMap := range userRewardMap {
+	//	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+	//		// 新增
+	//		err = uuc.ubRepo.AddBnbAmount(ctx, userId, vUserRewardMap.BnbReward, vUserRewardMap.BalanceTotal)
+	//		if nil != err {
+	//			return err
+	//		}
+	//		return nil
+	//	}); nil != err {
+	//		return err
+	//	}
+	//
+	//}
 
 	return nil
 }
