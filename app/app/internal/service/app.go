@@ -558,7 +558,12 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		usersMap[vUsers.ID] = vUsers.Address
 	}
 
-	userReward := make(map[int64][]int64, 0)
+	type userData struct {
+		UserId     int64
+		BalanceAll float64
+	}
+
+	userReward := make(map[int64][]*userData, 0)
 
 	for _, vUsers := range users {
 		var (
@@ -595,45 +600,60 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		if tmpBalanceAll > 1000 {
 			//fmt.Println(tmpBalanceAll, vUsers.ID)
 			if _, ok := userReward[1]; !ok {
-				userReward[1] = make([]int64, 0)
+				userReward[1] = make([]*userData, 0)
 			}
-			userReward[1] = append(userReward[1], vUsers.ID)
+			userReward[1] = append(userReward[1], &userData{
+				UserId:     vUsers.ID,
+				BalanceAll: tmpBalanceAll,
+			})
 		}
 
 		if tmpBalanceAll >= 10001 {
 			//fmt.Println(tmpBalanceAll, vUsers.ID)
 			if _, ok := userReward[2]; !ok {
-				userReward[2] = make([]int64, 0)
+				userReward[2] = make([]*userData, 0)
 			}
-			userReward[2] = append(userReward[2], vUsers.ID)
+			userReward[2] = append(userReward[2], &userData{
+				UserId:     vUsers.ID,
+				BalanceAll: tmpBalanceAll,
+			})
 		}
 
 		if tmpBalanceAll >= 50001 {
 			//fmt.Println(tmpBalanceAll, vUsers.ID)
 			if _, ok := userReward[3]; !ok {
-				userReward[3] = make([]int64, 0)
+				userReward[3] = make([]*userData, 0)
 			}
-			userReward[3] = append(userReward[3], vUsers.ID)
+			userReward[3] = append(userReward[3], &userData{
+				UserId:     vUsers.ID,
+				BalanceAll: tmpBalanceAll,
+			})
 		}
 
 		if tmpBalanceAll >= 100001 {
 			//fmt.Println(tmpBalanceAll, vUsers.ID)
 			if _, ok := userReward[4]; !ok {
-				userReward[4] = make([]int64, 0)
+				userReward[4] = make([]*userData, 0)
 			}
-			userReward[4] = append(userReward[4], vUsers.ID)
+			userReward[4] = append(userReward[4], &userData{
+				UserId:     vUsers.ID,
+				BalanceAll: tmpBalanceAll,
+			})
 		}
 
 		if tmpBalanceAll >= 150001 {
 			//fmt.Println(tmpBalanceAll, vUsers.ID)
 			if _, ok := userReward[5]; !ok {
-				userReward[5] = make([]int64, 0)
+				userReward[5] = make([]*userData, 0)
 			}
-			userReward[5] = append(userReward[5], vUsers.ID)
+			userReward[5] = append(userReward[5], &userData{
+				UserId:     vUsers.ID,
+				BalanceAll: tmpBalanceAll,
+			})
 		}
 	}
 
-	userRewardMap := make(map[int64]float64, 0)
+	userRewardMap2 := make(map[int64]*biz.BnbReward, 0)
 	for k, vUserReward := range userReward {
 		var tmpBuyAmount float64
 		var tmpSellAmount float64
@@ -670,16 +690,21 @@ func (a *AppService) RewardAllUserBnbBalance(ctx context.Context, req *v1.Reward
 		}
 
 		for _, vVUserReward := range vUserReward {
-			if _, ok := userRewardMap[vVUserReward]; !ok {
-				userRewardMap[vVUserReward] = float64(0)
+			if _, ok := userRewardMap2[vVUserReward.UserId]; !ok {
+				userRewardMap2[vVUserReward.UserId] = &biz.BnbReward{
+					UserId:       vVUserReward.UserId,
+					BalanceTotal: vVUserReward.BalanceAll,
+					BnbReward:    0,
+					CreatedAt:    time.Time{},
+				}
 			}
 
-			userRewardMap[vVUserReward] += tmpSellAmount
-			userRewardMap[vVUserReward] += tmpBuyAmount
+			userRewardMap2[vVUserReward.UserId].BnbReward += tmpSellAmount
+			userRewardMap2[vVUserReward.UserId].BnbReward += tmpBuyAmount
 		}
 	}
 
-	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap, usersMap)
+	err = a.uuc.AddUserBnbAmount(ctx, userRewardMap2, buyRewardAmount, sellRewardAmount, usersMap)
 	if nil != err {
 		return nil, err
 	}

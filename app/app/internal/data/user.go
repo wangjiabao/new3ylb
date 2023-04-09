@@ -129,11 +129,20 @@ type Reward struct {
 }
 
 type BnbReward struct {
-	ID        int64     `gorm:"primarykey;type:int"`
-	UserId    int64     `gorm:"type:int;not null"`
-	BnbReward float64   `gorm:"type:decimal(65,20);not null"`
-	CreatedAt time.Time `gorm:"type:datetime;not null"`
-	UpdatedAt time.Time `gorm:"type:datetime;not null"`
+	ID           int64     `gorm:"primarykey;type:int"`
+	UserId       int64     `gorm:"type:int;not null"`
+	BnbReward    float64   `gorm:"type:decimal(65,20);not null"`
+	BalanceTotal float64   `gorm:"type:decimal(65,20);not null"`
+	CreatedAt    time.Time `gorm:"type:datetime;not null"`
+	UpdatedAt    time.Time `gorm:"type:datetime;not null"`
+}
+
+type BnbRewardTotal struct {
+	ID         int64     `gorm:"primarykey;type:int"`
+	BuyAmount  float64   `gorm:"type:decimal(65,20);not null"`
+	SellAmount float64   `gorm:"type:decimal(65,20);not null"`
+	CreatedAt  time.Time `gorm:"type:datetime;not null"`
+	UpdatedAt  time.Time `gorm:"type:datetime;not null"`
 }
 
 type UserRepo struct {
@@ -857,7 +866,7 @@ func (ub UserBalanceRepo) GetUserBalance(ctx context.Context, userId int64) (*bi
 }
 
 // AddBnbAmount .
-func (ub *UserBalanceRepo) AddBnbAmount(ctx context.Context, userId int64, amount float64) error {
+func (ub *UserBalanceRepo) AddBnbAmount(ctx context.Context, userId int64, amount float64, balanceTotal float64) error {
 	var err error
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
@@ -868,8 +877,24 @@ func (ub *UserBalanceRepo) AddBnbAmount(ctx context.Context, userId int64, amoun
 	var reward BnbReward
 	reward.UserId = userId
 	reward.BnbReward = amount
-
+	reward.BalanceTotal = balanceTotal
 	err = ub.data.DB(ctx).Table("bnb_reward").Create(&reward).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// AddBnbAmountTotal .
+func (ub *UserBalanceRepo) AddBnbAmountTotal(ctx context.Context, buyAmount float64, sellAmount float64) error {
+	var (
+		reward BnbRewardTotal
+		err    error
+	)
+	reward.BuyAmount = buyAmount
+	reward.SellAmount = sellAmount
+	err = ub.data.DB(ctx).Table("bnb_reward_total").Create(&reward).Error
 	if err != nil {
 		return err
 	}
