@@ -509,7 +509,9 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 	// 提现记录
 	myWithdraws, err = uuc.ubRepo.GetWithdrawByUserId(ctx, myUser.ID)
 	for _, vMyWithdraw := range myWithdraws {
-		withdrawAmount += vMyWithdraw.Amount
+		if vMyWithdraw.Type == "usdt" {
+			withdrawAmount += vMyWithdraw.Amount
+		}
 	}
 
 	// 充值记录
