@@ -595,18 +595,20 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 
 		}
 
-		teamBnbBalance, err = uuc.ubRepo.GetUserBnbBalanceByUserIds(ctx, tmpUserIds2)
-		if nil != err {
-			return nil, err
-		}
-
 		if 0 < len(tmpUserIds) {
 			tmpUsersLocations, err = uuc.locationRepo.GetLocationsByUserIdsGroupByUserId(ctx, tmpUserIds)
 			if nil != tmpUsersLocations {
 				recommendTeamNum = int64(len(tmpUsersLocations))
 			}
+		}
 
-			tmpUsersLocations2, err = uuc.locationRepo.GetLocationsByUserIdsAt(ctx, tmpUserIds)
+		if 0 < len(tmpUserIds2) {
+			teamBnbBalance, err = uuc.ubRepo.GetUserBnbBalanceByUserIds(ctx, tmpUserIds2)
+			if nil != err {
+				return nil, err
+			}
+			
+			tmpUsersLocations2, err = uuc.locationRepo.GetLocationsByUserIdsAt(ctx, tmpUserIds2)
 			if nil != tmpUsersLocations2 {
 				for _, vTmpUsersLocations2 := range tmpUsersLocations2 {
 					areaTotalTodayAmount += vTmpUsersLocations2.CurrentMax / 5
