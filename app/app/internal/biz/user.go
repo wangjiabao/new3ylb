@@ -607,7 +607,7 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 			if nil != err {
 				return nil, err
 			}
-			
+
 			tmpUsersLocations2, err = uuc.locationRepo.GetLocationsByUserIdsAt(ctx, tmpUserIds2)
 			if nil != tmpUsersLocations2 {
 				for _, vTmpUsersLocations2 := range tmpUsersLocations2 {
@@ -621,6 +621,10 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 	userRewards, err = uuc.ubRepo.GetUserRewardByUserId(ctx, myUser.ID)
 	if nil != userRewards {
 		for _, vUserReward := range userRewards {
+			if "last_reward" == vUserReward.Reason {
+				continue
+			}
+
 			userRewardTotal += vUserReward.Amount
 			if "recommend" == vUserReward.Reason {
 				recommendTotal += vUserReward.Amount
