@@ -510,7 +510,7 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 	myWithdraws, err = uuc.ubRepo.GetWithdrawByUserId(ctx, myUser.ID)
 	for _, vMyWithdraw := range myWithdraws {
 		if vMyWithdraw.Type == "usdt" {
-			withdrawAmount += vMyWithdraw.Amount
+			withdrawAmount += vMyWithdraw.RelAmount
 		}
 	}
 
@@ -1006,12 +1006,21 @@ func (uuc *UserUseCase) WithdrawList(ctx context.Context, user *User) (*v1.Withd
 	}
 
 	for _, v := range withdraws {
-		res.Withdraw = append(res.Withdraw, &v1.WithdrawListReply_List{
-			CreatedAt: v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
-			Amount:    fmt.Sprintf("%.2f", float64(v.Amount)/float64(10000000000)),
-			Status:    v.Status,
-			Type:      v.Type,
-		})
+		if "usdt" == v.Type {
+			res.Withdraw = append(res.Withdraw, &v1.WithdrawListReply_List{
+				CreatedAt: v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
+				Amount:    fmt.Sprintf("%.2f", float64(v.RelAmount)/float64(10000000000)),
+				Status:    v.Status,
+				Type:      v.Type,
+			})
+		} else {
+			res.Withdraw = append(res.Withdraw, &v1.WithdrawListReply_List{
+				CreatedAt: v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
+				Amount:    fmt.Sprintf("%.2f", float64(v.Amount)/float64(10000000000)),
+				Status:    v.Status,
+				Type:      v.Type,
+			})
+		}
 	}
 
 	return res, nil
