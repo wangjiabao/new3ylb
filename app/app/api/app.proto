@@ -261,6 +261,7 @@ message UserInfoReply {
 	string todayBnbReward = 51;
 	string teamUserBnbBalanceAmount = 53;
 	int64 teamUserBnbBalanceAmountInt = 54;
+	string withdrawRewardAll = 55;
 }
 
 message RewardListRequest {

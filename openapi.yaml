@@ -620,6 +620,8 @@ components:
                 teamUserBnbBalanceAmountInt:
                     type: integer
                     format: int64
+                withdrawRewardAll:
+                    type: string
         UserInfoReply_List:
             type: object
             properties:

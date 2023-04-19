@@ -468,6 +468,7 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		bnbRewardAmount             float64
 		todayBnbReward              float64
 		teamBnbBalance              float64
+		withdrawRewardAll           int64
 		areaTotalTodayAmount        int64
 		err                         error
 	)
@@ -645,6 +646,8 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 				recommendVipTotal += vUserReward.Amount
 			} else if "daily_recommend_area" == vUserReward.Reason {
 				recommendAreaTotal += vUserReward.Amount
+			} else if "location" == vUserReward.Reason && "withdraw" == vUserReward.Type {
+				withdrawRewardAll += vUserReward.Amount
 			}
 		}
 	}
@@ -879,6 +882,7 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		AreaMaxAmount:               strconv.FormatInt(maxAreaAmount, 10),
 		RecommendAreaTotal:          fmt.Sprintf("%.2f", float64(recommendAreaTotal)/float64(10000000000)),
 		AreaTotalTodayAmount:        fmt.Sprintf("%.2f", float64(areaTotalTodayAmount)/float64(10000000000)),
+		WithdrawRewardAll:           fmt.Sprintf("%.2f", float64(withdrawRewardAll)/float64(10000000000)),
 	}, nil
 }
 

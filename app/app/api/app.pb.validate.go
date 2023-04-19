@@ -952,6 +952,8 @@ func (m *UserInfoReply) validate(all bool) error {
 
 	// no validation rules for TeamUserBnbBalanceAmountInt
 
+	// no validation rules for WithdrawRewardAll
+
 	if len(errors) > 0 {
 		return UserInfoReplyMultiError(errors)
 	}
