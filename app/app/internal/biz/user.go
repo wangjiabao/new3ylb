@@ -629,7 +629,7 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 			userRewardTotal += vUserReward.Amount
 			if "recommend" == vUserReward.Reason {
 				recommendTotal += vUserReward.Amount
-			} else if "location" == vUserReward.Reason {
+			} else if "location" == vUserReward.Reason && "location" == vUserReward.Type {
 				locationTotal += vUserReward.Amount
 				if "col" == vUserReward.LocationType {
 					locationTotalCol += vUserReward.Amount
