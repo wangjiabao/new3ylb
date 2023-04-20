@@ -189,6 +189,7 @@ type UserBalanceRepo interface {
 	UpdateWithdrawAmount(ctx context.Context, id int64, status string, amount int64) (*Withdraw, error)
 	GetUserRewardRecommendSort(ctx context.Context) ([]*UserSortRecommendReward, error)
 	GetUserRewardTodayTotalByUserId(ctx context.Context, userId int64) (*UserSortRecommendReward, error)
+	GetWithdrawDaily(ctx context.Context) (int64, error)
 }
 
 type UserRecommendRepo interface {
@@ -469,7 +470,9 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		todayBnbReward              float64
 		teamBnbBalance              float64
 		withdrawRewardAll           int64
+		locationTotal10             int64
 		areaTotalTodayAmount        int64
+		withdrawTotal               int64
 		err                         error
 	)
 
@@ -705,6 +708,12 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		}
 	}
 
+	withdrawTotal, _ = uuc.ubRepo.GetWithdrawDaily(ctx)
+	if 0 < withdrawTotal {
+		withdrawTotal -= withdrawTotal / 100 * 5 // 手续费
+		withdrawTotal = withdrawTotal / 100 * 50
+	}
+
 	// 全网手续费
 	userLocations, err = uuc.locationRepo.GetLocationDaily(ctx)
 	if nil != err {
@@ -714,6 +723,9 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 	for _, userLocation := range userLocations {
 		fee += userLocation.CurrentMax / 5
 	}
+
+	//节点百分之10
+	locationTotal10 = fee / 10
 
 	// 昨日剩余全网手续费
 	systemYesterdayreward, _ = uuc.ubRepo.GetSystemYesterdayDailyReward(ctx)
@@ -883,6 +895,8 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		RecommendAreaTotal:          fmt.Sprintf("%.2f", float64(recommendAreaTotal)/float64(10000000000)),
 		AreaTotalTodayAmount:        fmt.Sprintf("%.2f", float64(areaTotalTodayAmount)/float64(10000000000)),
 		WithdrawRewardAll:           fmt.Sprintf("%.2f", float64(withdrawRewardAll)/float64(10000000000)),
+		Location10:                  fmt.Sprintf("%.2f", float64(locationTotal10)/float64(10000000000)),
+		WithdrawTotal:               fmt.Sprintf("%.2f", float64(withdrawTotal)/float64(10000000000)),
 	}, nil
 }
 

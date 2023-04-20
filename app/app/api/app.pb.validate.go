@@ -954,6 +954,10 @@ func (m *UserInfoReply) validate(all bool) error {
 
 	// no validation rules for WithdrawRewardAll
 
+	// no validation rules for Location10
+
+	// no validation rules for WithdrawTotal
+
 	if len(errors) > 0 {
 		return UserInfoReplyMultiError(errors)
 	}

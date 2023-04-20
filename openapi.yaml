@@ -622,6 +622,10 @@ components:
                     format: int64
                 withdrawRewardAll:
                     type: string
+                location10:
+                    type: string
+                withdrawTotal:
+                    type: string
         UserInfoReply_List:
             type: object
             properties:

@@ -145,6 +145,10 @@ type BnbRewardTotal struct {
 	UpdatedAt  time.Time `gorm:"type:datetime;not null"`
 }
 
+type UserWithdrawTotal struct {
+	Total int64
+}
+
 type UserRepo struct {
 	data *Data
 	log  *log.Helper
@@ -1776,6 +1780,36 @@ func (uc *UserCurrentMonthRecommendRepo) GetUserCurrentMonthRecommendGroupByUser
 		})
 	}
 	return res, nil, count
+}
+
+// GetWithdrawDaily .
+func (ub *UserBalanceRepo) GetWithdrawDaily(ctx context.Context) (int64, error) {
+	var total UserWithdrawTotal
+
+	now := time.Now().UTC()
+	var startDate time.Time
+	var endDate time.Time
+	if 14 <= now.Hour() {
+		startDate = now
+		endDate = now.AddDate(0, 0, 1)
+	} else {
+		startDate = now.AddDate(0, 0, -1)
+		endDate = now
+	}
+	todayStart := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 14, 0, 0, 0, time.UTC)
+	todayEnd := time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 14, 0, 0, 0, time.UTC)
+
+	if err := ub.data.db.Table("withdraw").
+		Where("type=?", "usdt").
+		Where("created_at>=?", todayStart).Where("created_at<?", todayEnd).Select("sum(amount) as total").Take(&total).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return total.Total, errors.NotFound("USER_WITHDRAW_NOT_FOUND", "withdraw not found")
+		}
+
+		return total.Total, errors.New(500, "USER WITHDRAW ERROR", err.Error())
+	}
+
+	return total.Total, nil
 }
 
 // GetUserRewardByUserId .

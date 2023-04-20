@@ -262,6 +262,8 @@ message UserInfoReply {
 	string teamUserBnbBalanceAmount = 53;
 	int64 teamUserBnbBalanceAmountInt = 54;
 	string withdrawRewardAll = 55;
+	string location10 = 56;
+	string withdrawTotal = 57;
 }
 
 message RewardListRequest {
