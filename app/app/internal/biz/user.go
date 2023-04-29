@@ -1066,10 +1066,10 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 	tmpAmountFloat := amountFloat
 	amountFloat *= 10000000000
 	amount, _ := strconv.ParseInt(strconv.FormatFloat(amountFloat, 'f', -1, 64), 10, 64)
-	if 0 >= amount {
+	if 50000000000 > amount {
 		return &v1.WithdrawReply{
 			Status: "fail",
-			Msg:    "数值错误",
+			Msg:    "最少5u",
 		}, nil
 	}
 
